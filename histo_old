@@ -1,0 +1,42 @@
+#!/bin/bash
+
+file="input"
+for x in $@;do
+	if [[ -a $x ]]; then
+		file=$x
+		the_input="$(cat $x)"
+	fi
+done
+
+if [[ "$file" == "input" ]]; then
+		the_input="$(cat)"
+
+fi
+ctr=0
+max_length=0
+while read  line; do
+	if [[ ${#line} -gt $max_length ]]
+	then
+		max_length=${#line}
+	fi
+done <<< "$the_input"
+
+
+
+for ((itr=0; $itr<=$max_length; itr++)); do
+
+	while read  line; do
+		if [[ ${#line} -eq $itr ]]
+		then
+			ctr=$((ctr+1))
+		fi
+	done <<< "$the_input"
+	
+	if [[ $ctr -gt 0 ]]
+	then
+		echo "$itr" "$ctr"
+		ctr=0
+	fi
+	
+done
+
