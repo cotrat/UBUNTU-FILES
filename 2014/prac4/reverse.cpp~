@@ -1,0 +1,38 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+string reverseStringRecursively(string str){
+    if (str.length() == 1) {
+        return str;
+    }else{
+	cout << str << endl;
+        return reverseStringRecursively(str.substr(1,str.length())) + str.at(0);
+    }
+}
+
+int fib(int num, vector<int>* fibbed)
+{
+	 if(num == 0)
+        	return 0;
+    	if (num == 1 || num == 2)
+        	return 1;
+    	if(fibbed[num] != 0)
+        	return fibbed[num];
+    	else
+    	{
+        	fibbed[num] = fib(num - 1) + fib(num - 2);
+        	return fibbed[num];
+    	}	
+
+}
+
+
+
+int main()
+{
+    	vector<int> fibs_calc;
+	cout<<"THE FIB OF 10 IS "<<fib(10, &fibs_calc);
+	return 0;
+}

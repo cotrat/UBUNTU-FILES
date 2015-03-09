@@ -1,0 +1,19 @@
+#ifndef HUMAN_H
+#define HUMAN_H
+#include <string>
+
+
+class Human {
+	public:
+		Human();
+		char[] getHand();
+		void setHand(char[] hand);
+
+
+		~Human();
+		
+	private:
+		char[] hand;
+};
+
+#endif

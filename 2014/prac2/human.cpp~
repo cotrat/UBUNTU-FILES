@@ -1,0 +1,21 @@
+#include "human.h"
+#include "referee.h"
+#include <string>
+
+
+Human::Human(){
+}
+
+Human::~Human(){
+}
+
+char[] Human::getHand()
+{
+	return hand;
+}
+
+void Human::setHand(char[] value)
+{
+	strcpy(value, hand);
+
+}

@@ -1,0 +1,20 @@
+#ifndef EFFICIENTFIBONNACI_H
+#define EFFICIENTFIBONNACI_H
+#include <string>
+#include <vector>
+
+
+class EfficientFibonacci {
+	public:
+		EfficientFibonacci();
+		int ApplyEfficientFibonacci(int);
+		bool checkWord(str);
+		~EfficientFibonacci();
+		
+	private:
+		
+		std::vector<int> m_calculated;
+		
+};
+
+#endif
