@@ -1,0 +1,48 @@
+PSSD - Week 2 Practice Problems Journal
+
+Black and Red - 
+	I approached this problem using iteration. The first step was to check each position (done by using a foor 	
+	loop). Then for each position it was necessary to check if this was a possible location. This was done by 	
+	finding the input before and after this position and merging them. Then simply check if the amount of red 	
+	cards is ever greater than the amount of black cards, its impossible, if it never goes over its possible 	
+	and we return.
+
+ChangingString - 
+
+	For this problem I thought to find the distances between each word, then find the maximum distance (K 	
+times) and set this distance to 0, by changing A[max distance] = B[max distance]. This solution works 		
+because to find the minimum distance we can attain after K changes we need to change the biggest distances. 	One 
+problem I had was not including cases where the strings were identical, for this case we simply add one 	to 
+the total distances (because we are forced to make a change, so just changed b to c or j to k). A better 	
+approach would have been to sort the distances vector rather than finding the max each time.
+
+MooingCows - 
+
+	I approached MooingCows as a quit simple brute force algorithm. Find the first cow, check his 		
+dissatisfaction vs. all the other cows and repeat. This algorithm requires 4 nested for loops, but as the 	
+paddock sizes are quite small, it is not horribly inefficient. The only difficulty I had with this problem 	was 
+a simple syntactical error when calculating the dissatisfaction of each cow (using the wrong 	mathematical 
+formula).
+
+Reppity - 
+
+	The reppity problem was solved by creating a string, which grew in length by 1 each time
+ 	and checking it against another string which began at the end point of the first string, (each of these 	
+	strings are substrings of the input string). using the rfind function included in the string library also 	
+made this question easier. Using the library allowed me to finish the problem slighty faster rather than 	
+having to check manually if a string existed within a string.
+
+ElevatorLimit - 
+
+	This problem was definitely the most difficult of all the problems I solved this week. I solved this 	
+problem by iterating through the input vectors and finding the highest number of people that were ever on, 		
+the lowest number of people that were ever on. Clearly if these low number was negative, we must start with 	
+abs(low) people on board. Finding the max was a case of subtracting high from physical limit. But an extra 	
+condition was necessary, we needed to make sure the max was possible given the min. I struggled with 	finding 
+this condition and it probably took me longer than it should have. The condition was that the high 	+ abs(low) 
+must be less than physical limit, or we have an impossibility.
+
+As a general summary of this week, I think I was able to solve the problems I attempted reasonably well, albeit not 
+necessarily fast. Unfortunately the recursion problems still give me great difficulty, as i wouldnt rate my skills 
+with recursion very high, which is something I must work on in further weeks.
+	

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc q52012.c -o q52012

@@ -1,0 +1,44 @@
+PSSD Week 4 Journal
+Mitchell Anderson a1647264
+
+RugSizes -
+	I initially approached rugsizes ina  very naive way, using nested for loops to check for every possible combination of factors
+(e.g. 1x2 1x3 1x4) and checking if they are equal to the area and meet the conditions given in the problem statement. This method produced
+correct answers but was incredibly slow, so slow that the automark script would run out of time before completing all tests.
+
+This issue required me to think about the problem more critically. The second method I came up with was finding the factors by determining
+if (number % i == 0) where i increments from 2 to n. We then check if this factor meets the condition given by the problem statement, then
+check if its complementary factor is <= (to exclude cases such as 2x3 being the same as 3x2). This solution was much more efficient and was
+easily able to pass the tests in time
+
+Important Tasks-
+
+	For this problem I sorted each vector in descending order and checked if the longest-time task can be completed on the first computer,
+if not we need to move on to the next computer (without incrementing the total count), however if it is possible we still move on to the next 
+computer but this time we increase the count. if at any point the iterator pointing the computer we are using is greater than the amount of all
+computers, we have ran out of computers and return.
+
+TimeTravellingCellar - 
+	
+	This problem called for a simple solution where you would advance in time the highest value cellar and send back in time the lowest decay 
+. The problem with this solution occurs when the max and the min are at the same location, we cant send back and forward the same cellar. The solution
+to overcome this problem is to find the second smallest and the second largest values, then find the maximum profit from (max-min2, max2-min), this value
+will be the return value taht you need.
+
+FriendlySequences -
+
+	Upon reading friendlysequences I was immediately able to see a solution. Because the problem constrains the sequences to be contiguous I used nested 
+for loops where the second loop index begins from 1 greater than the original for loop. The difficulty for me in this problem was to create a function which 
+determines whether two strings contain the same characters. I did this by running a for loop over each, which filled a boolean vector with either 1 if that number
+exists. If these two boolean vectors are the same then the strings contain the same characters. A small optimisation for this problem is that you only need to check
+each i (the outer for loop) against j (the inner for loop) not the values in between, because these values inbetween are guaranteed to be contiguous if j is 
+still incrementing.
+
+UnsealTheSafe - 
+	
+	This problem I immediately recognized as a recursion based problem. The actual recursive forumla is quite easy to derive, the issue lies in the fact that
+using this forumla makes so many calls that the program will literally take hours to run without some sort of optimisation (due to the fact that there is an
+incredibly large amount of repeated calls) . This can be solved simply by using memoization (i.e storing the results of past calls in order to not have to
+calculate thema gain). This is the main principal behind dynamic programming, luckily enough I had done a problem like this previously in ADDS so i recognized
+the method for soling it. 
+

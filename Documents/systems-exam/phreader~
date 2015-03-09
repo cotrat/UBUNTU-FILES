@@ -1,0 +1,13 @@
+#!/bin/bash
+
+while read line
+do
+	name=$( echo "$line" | cut -d " " -f1 )
+	name=$( echo "$name" | tr  [:upper:] [:lower:] )	
+	for x in $@;do
+		if [ "$x" == "$name" ]; then
+			echo "$line"
+		fi
+	done
+
+done < phbook.txt

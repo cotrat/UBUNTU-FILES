@@ -1,0 +1,16 @@
+#include "Die.h"
+#include <cstdlib>
+
+Die::Die()
+{
+	m_face = rand() % 6+1;
+}
+
+void Die::roll()
+{
+	m_face = rand() % 6+1;
+}
+
+int Die::getFace() const{
+	return m_face;
+}

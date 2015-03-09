@@ -1,0 +1,82 @@
+#include "Deck.h"
+
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+
+using namespace std;
+
+Deck::Deck() {
+    // populate the deck with one of each card
+    for(int suit = 0; suit <= CLUB; suit++) {
+        for(int face = 1; face <= NUM_VALUES; face++) {
+            // Card constructor is Card (Suit, int)
+            // need to cast suit from an integer to a Suit
+            m_cards.push_back(Card(static_cast<Suit>(suit), face));
+        }
+    }
+}
+
+void Deck::shuffle() {
+    random_shuffle(m_cards.begin(), m_cards.end());
+}
+
+void Deck::sort() {
+    vector<Card> sortedDeck;
+    
+    // select each card in turn
+    for(int i = 0; i < m_cards.size(); i++) {
+        // find place in sorted deck
+        int index = 0;
+        while(index < sortedDeck.size() && sortedDeck[index] < m_cards[i]) {
+            index++;
+        }
+        
+        // insert into sorted deck at that place
+        sortedDeck.insert(sortedDeck.begin() + index, m_cards[i]);
+    }
+    
+    // copy sorted deck to this deck's m_cards
+    m_cards = sortedDeck;
+}
+
+void Deck::print() const {
+    for(int i = 0; i < m_cards.size(); i++) {
+        cout << toString(m_cards[i].getSuit());
+        cout << toString(m_cards[i].getValue()) << endl;
+    }
+}
+
+string Deck::toString(Suit suit) const {
+    switch(suit) {
+        case HEART:
+            return "Heart";
+        case SPADE:
+            return "Spade";
+        case DIAMOND:
+            return "Diamond";
+        case CLUB:
+            return "Club";
+    }
+}
+
+string Deck::toString(int value) const {
+    if(value < 11) {
+        stringstream myStream;
+        myStream << value;
+        return myStream.str();
+    }
+    
+    switch(value) {
+        case 11:
+            return "J";
+        case 12:
+            return "Q";
+        case 13:
+            return "K";
+        case 14:
+            return "A";
+    }
+    
+    return "invalid card value";
+}

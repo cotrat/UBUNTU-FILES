@@ -1,0 +1,17 @@
+#!/bin/bash
+file="input"
+for x in $@;do
+	if [[ -a $x ]]; then
+		file=$x
+	fi
+done
+
+if [[ "$file" == "input" ]];then
+	while read line
+	do
+		echo "$line" | tr [:space:] '\n'
+    	
+	done
+else
+	( tr [:space:] '\n' < $1)
+fi

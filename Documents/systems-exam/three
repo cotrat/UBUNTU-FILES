@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+	echo " Incorrect usage, please enter three integers "
+else
+	echo -e "$1\n$2\n$3" | sort -n -r | head -n 1
+fi
+
+

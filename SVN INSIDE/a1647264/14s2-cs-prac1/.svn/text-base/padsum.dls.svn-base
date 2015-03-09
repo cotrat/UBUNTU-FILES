@@ -1,0 +1,93 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       padSum  Compute sum of Padovan numbers                                ;
+;                                                                             ;
+;       Entry   r1= lo                                                        ;
+;               r2= hi                                                        ;
+;               r3= step                                                      ;
+;               jal padSum                                                    ;
+;                                                                             ;
+;       Exit    r1= Sum of Padovan numbers from lo to hi (inclusive),         ;
+;                   advancing by step.                                        ;
+;                   step                                                      ;
+;                                                                             ;
+;       Uses    r1, r2                                                        ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+LIGHTS 		.equ 16#FFFFFFF8
+SWITCHES	.equ 16#FFFFFFFC
+lo		.word 0
+hi		.word 10
+result		.space 4
+		.start MAIN
+
+
+MAIN:
+		lw r3, SWITCHES			; load step from switches
+		jal pad	
+		halt	
+
+
+pad:						; beginning of padovan function
+
+		lw	r1,lo;
+		lw	r2,hi;
+		
+		add	r11,r0,r1		; stepctr = lo 
+		addi	r6,r0,1			; pad(n-3) = 1
+		addi	r7,r0,1			; pad(n-2) = 1
+		addi	r8,r0,1			; pad(n-1) = 1
+		addi	r9,r0,0			; pad(n)
+		addi	r13,r0,0		; total sum
+
+		slti	r4,r3,1			; step < 1 ?
+		bt	r4,bad			; not possible
+
+		sgt	r4,r1,r2		; lo > hi
+		bt	r4,bad			; not possible
+
+		sgti	r4,r1,2			; lo > 2 ?
+		bt	r4,loop			; if > 2 go to loop
+		add	r10,r0,r1		; i = lo
+loopbeg:	slei	r4,r10,2		; i<=2 ?
+		bf	r4,preloop		;
+		seq	r4,r10,r11		; i == stepctr
+		bf	r4,inci			; if false only increment i
+		addi	r13,r13,1		; total sum = total sum + 1 as all pad < 3 = 1
+		add	r11,r11,r3		; stepctr = stepctr + step amt
+inci:		addi 	r10,r10,1 		; i++
+		j loopbeg
+
+				
+preloop:	sgti	r4,r2,2			; hi > 2 ?
+		bf	r4,end			; we dont need to add any more	
+		addi	r10,r0,3		; set i = 3
+loop:	
+		sle	r4,r10,r2		; i <= hi
+		bf	r4,end			; if not true jump to end
+		add	r9,r6,r7		; pad(n) = pad(n-2) + pad(n-3)
+		mov	r6,r7			; pad(n-3) = pad(n-2)
+		mov	r7,r8			; pad(n-2) = pad(n-1)
+		mov	r8,r9			; pad(n-1) = pad(n)
+		seq	r4,r10,r11		; i == stepctr
+		bf	r4,inci2			; if false only increment i
+		add	r13,r13,r9		; total sum = total sum + pad(n)
+		add	r11,r11,r3		; stepctr = stepctr + step amt
+inci2:		addi 	r10,r10,1 		; i++
+		j loop
+
+
+end:		add	r1,r0,r13		; put total sum in r22
+		sw 	LIGHTS,r13		; display result in lights
+		sw	result,r13		;
+		jr	r31			;
+		
+bad:
+		addi	r1,r0,-1		; just letting us see that an exit condition was met
+		sw 	LIGHTS,r1		; display result in lights
+		sw	result,r1		;
+		jr	r31			; a bad input has been deteced
+	
+
+

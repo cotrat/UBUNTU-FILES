@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for x in programs/*.c; do
+	progname=$( basename "$x" .c )
+	gcc "$x" -o "$progname"
+
+	if [[ $? == 0 ]]; then
+			echo "COMPILED"
+			mv "$progname" programs
+		fi
+	
+done

@@ -1,0 +1,33 @@
+Mitchell Anderson - a1647264
+PSSD Week 10 - Journal
+
+Review - 
+This week I was able to fully understand the importance of running through test cases on paper (something that I have been working on for a while). Without going through these test cases I probably would have not been able to see the quite obvious solutions to problems that werent incredibly difficult.
+
+FoxAndMountainEasy - 
+
+I found this question to very interesting and somewhat challenging. Initially I worked through given test cases to develop and algorithm. This was very important as I was able to work out many conditions that I would need to include. Basically we need to find the net change in heigh after the given path, get to a point where that change is possible, then see if we can still get to where we need to be. 
+
+My major difficulty came from the last part "checking if we can stil get to where we want". I was not initially able to see that the mod 2 value of both the amount of steps remaining and how far we still must be equal to be able to get to the final point. I was able to overcome this obstacle by running through a lot of test cases by hand and recognizing the pattern that they all followed.
+
+BridgeSort - 
+BridgeSort was a problem which was easier than it first seemed due to the nature of the game bridge. I saw that I would be able to already utilise the way that C++ sorts std::pairs to make the problem a lot easier. Because in bridge the ordering goes Club, Diamond, Heart, Spade, then 0-10, face cards, then ace std::sort can be used to avoid writing any sort algorithm. The only thing that needs to be done is to convert T to 10 etc.
+
+I did not have much trouble with this problem only because I was able to see how I could take advantage of standard library functions in order to massively decrease the difficulty.
+
+CubeStickers - 
+
+CubeStickers was another problem that I benifitted from manually going through test cases. I was able to see that each sticker cant be used more than two times, because each edge is adjacent to four others. This means that it was simple enough to count each unique colour (but not count it any more than twice).
+
+This was another problem where it showed that it was very helpful to run through test cases on paper before trying to code. Initially I wasnt able to visualize the problem and couldnt come up with an answer, but after running through some test cases it becamevery obvious what the solution is.
+
+BigBurger - 
+
+BigBurger was once again another problem where I was able to see an answer after going through some test cases on paper. I chose BigBurger as a warm up problem and as such attempted to finish it as quickly as possible. 
+
+The only difficulty I had was that I initially overlooked the case whereby the next customer over actually arrives later than when the previous customer finishes being served. This was, however, a simple case to solve and was solved by simply adding one condition. I also overlooked the condition where only one person is served in which case the return should just be 0
+
+TrafficMonitor -
+This was by far the most difficult problem that I attempted this week and my initial answer was not correct. My initial response was to place a monitor at the nodes which had the highest degree, intuitively this seemed correct, but was actually not. This led me to going back and manually going through the test case. I was sure that there would be a "best choice" each time but just had to figure out what that choice was.
+
+After going through the test cases it became obvious that the nodes where a monitor should be placed should be the leaf nodes. This is because leaf nodes, when a monitor is placed on them, cover edge cases. I also had some difficulty in actually coding this problem, mainly in figuring out how to terminate by while loop (as it needed to keep going until there were no "unmonitored" edges).

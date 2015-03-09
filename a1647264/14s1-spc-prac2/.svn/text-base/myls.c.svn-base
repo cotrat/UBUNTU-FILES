@@ -1,0 +1,51 @@
+#define _BSD_SOURCE
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
+
+int main(int argc, char **argv)
+{
+	struct dirent *directory_struct;
+    	DIR *directory_point;
+
+	if(argc <= 1)
+	{
+    		directory_point = opendir("./");
+	}
+	else
+	{
+		directory_point = opendir(argv[1]);
+	}
+
+	if (directory_point == NULL) 
+	{
+        	printf ("NOT A DIRECTORY");
+		return 0;
+    	}
+	    
+
+    	while ((directory_struct = readdir(directory_point)) != NULL) 
+	{
+		if (directory_struct->d_type == DT_DIR)
+		{
+			printf ("dir ");
+		}
+
+		if (directory_struct->d_type == DT_LNK)
+		{
+			printf ("lnk ");
+		}
+
+		if (directory_struct->d_type == DT_REG)
+		{
+			printf ("reg ");
+		}
+        	printf ("%s\n", directory_struct->d_name);
+    	}
+
+    	closedir (directory_point);
+    	return 0;
+
+}

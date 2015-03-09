@@ -1,0 +1,66 @@
+Mitchell Anderson - a1647264
+PSSD Week 8 Journal
+
+Overview - 
+	This week I struggled with some of the problems, not logically, but figuring out edge cases. I have to remember
+that it is very important to consider these cases as ignoring them will always (unless by some lucky coincidence) lead
+to the wrong answer. By identifying them early one I can avoid the case where I think my logic is faulty when it isnt, saving 
+quite a lot of time.
+
+Thimbles -
+	I chose thimbles as a simple warm up problem just the practice writing fast and correct code.
+The logic behind this questionw as quite easy and I am somewhat disappointed that I didnt get 100 on the first submit
+(used two if statements instead of an else-if) but I was easily able to spot and correct my error. This 
+was the only difficulty I had with this problem and otherwise was able to finish it in less than 10 minutes.
+
+As an exercise purely for enjoyment I played "code golf" with this question, attempting
+to condense it to as few characters as possible.
+
+ProblemsToSolve - 
+	ProblemsToSolve is probably the question that gave me the most difficulty this week (of those
+I attempted). I was quickly able to see we want to check each pair and find the one is over
+the variance and has the minimum amount of questions answered. I was not able to get the indexing right
+and it took me a long time to figure out how to find the "quickest route" to these questions. I was 
+eventually able to figure it out, the key was taking advantage of the fact that integers division rounds down
+so for example it takes 2 questions to get to both question 1 and 2 (0->1) or (0->2).
+
+Another minor issue I had was that I originally did not consider the edge case whereby it was actually
+impossible to reach this variance, but once i recognized this error it was a simple case of adding an if statement
+to cover it
+
+CorporationSalary -
+	I very much enjoyed coding an answer to CorporationSalary, it was both challenging and rewarding.
+For this problem I saw that a recursive answer would be appropriate, running down the call tree until
+we find a person who has no employees (this was the base case). This algorithm worked perfectly but ran too
+long for larger cases so a simple memoization was necessary to make sure calls are not repeated multiple times.
+
+Another problem I had with this question was the websubmit, using global variables they were not cleared
+each time leading to incorrect answers on websubmit that appeared correct on my local machine. This was
+corrected by making sure to clear both the global vectors used each time the functionw as called.
+
+RockStar - 
+	Rockstar was the type of problem where I sat downa dn tried to figure out the best method to solve
+it on a piece of paper before attempting the question. Obviously if there is a "f" recording we need to play this first
+so logically we need two basic if statements, when there is and isnt an "f" recording. From there my process
+of solving the problem was by slowly looking at the best next step we could take to maximize the tracks on the album.
+
+One issue I had to overcome was the minor edge cases that appear (i.e. you can get an extra track if you have more 
+"fs" then "sf"). These cases are not immediately apparent and took me quite a while to realize why my answers
+were sometimes off by a small amount.
+
+MatchNumbersEasy - 
+	My method for solving MatchNumbersEasy was to take a greedy approach. First I calculated the minimum costing digit
+then divided the amount of matches we have by that numbers, this gives us the maximum amount of digits that
+we can possibly have. Then it was a process of going through the numbers and picking the biggest one that still allowed
+for us to make this max-digit number. This meant that we always picked the best choice we possible could
+(conviently the digits were in order so we always just wanted the "latest" one that still left us able to create the max-digit number)
+. 
+
+A big problem that I encountered was when the digit 0 was the lowest costing digit. This is obviously a problem because we cant
+have leading 0's or else the number will be smaller than what we really want. To solve this the case where the 0 digit
+uses the least matches we must find the second smallest match-using digit and pick that as the first digit. Then we can continue
+using the 0 digit as minimum-match digit.
+
+
+
+

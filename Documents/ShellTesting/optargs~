@@ -1,0 +1,14 @@
+#!/bin/bash
+optind=1
+for x in $@;do
+		
+		if [[ $x == '-r' ]]; then
+			echo "FOUND -R"
+			echo "AT" $optind
+			echo "ITS CORRESPONDING PARAM IS" $((optind+1))
+			echo $((optind+1))
+		fi
+	#echo ${@:$((optind+1)):1}
+done
+
+

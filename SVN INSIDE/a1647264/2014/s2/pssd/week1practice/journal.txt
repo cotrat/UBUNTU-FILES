@@ -1,0 +1,65 @@
+Problem Solving and Software - 
+
+InchWorm - 
+
+Upon reading the problem description for InchWorm it was obvious that the problem could easily be 
+solved with simple maths (specifically use of modulo operation) to calculate when the InchWorm is 
+eating. These calculations are done within a for loop which iterates, by the given InchWorms movement 
+distance. Inside the loop is a simple check (loop itr value modulo the distance the leaves are apart), 
+if this value is 0, increase a counter.
+
+I only had one problem with this algorithm, initially the iteration was not inclusive (meaning that if 
+a leaf was at the very end of the branch it would not be eaten). This was solved by simply making the 
+iteration inclusive (less than or equals to, rather than simply less than).
+
+EggCarton - 
+
+The problem description of EggCarton calls for a simple greedy algorithm to be used to find the 
+smallest amount of cartons. The smallest amount of cartons can be found by simply chosing the 8-egg 
+carton each time, given that this would not result in more than the desired amount of eggs being 
+purchased (i.e. x+8 <= desired amount). If this condition was not met, simply attempt to add six eggs, 
+testing again that we do not go over the purchased amount (i.e. x+6 <= desired amount). If both of 
+these purchases result in too many eggs being purchased, subtract one 8egg carton and add one 6 egg 
+carton, if this results in a negative value for 8 egg cartons, return -1 (the amount given is 
+impossible).
+
+I had some minor issues while designing and coding this problem. Initially I had placed checks (if an 
+odd amount of eggs return -1, if less than 6 return -1) but changes to my algorithm made these checks 
+unnecessary. Also some simple syntactical errors were made (originally I was calculating the total 
+amount of eggs in the incorrect position)
+ 
+PartySeats - 
+
+I tackled this problem by initially going to pen and paper to discover the conditions under which no 
+seating plan would be possible. These conditions were found to be an uneven amount of boys and girls, 
+and if the person sitting before the hostess was an uneven number (there must be an even amount of 
+people between the host and hostess in order to alternate genders). aFTER DISCOVERING THESE CONDITIONS 
+I set about creating two vectors, one to store the boys, one to store the girls (both of which would 
+be sorted). After this it was a simple case of iterating through ( n = amount of attendees ) times 
+placing a girl or a boy depending if the seat number was odd or even.
+
+One issue I came across was that i was ignoring the fact that size of the attendees vector must be 
+increased by 2 to account for the host and the hostess, an issue that originally broke my iteration.
+
+StreetParking - 
+
+This problem was quite simple, iterate through the street and deterimine whether a spot is suitable 
+for parking. I check each spot, if it is trivially suitable, check the spot behind (and if there is a 
+spot ahead and two spots ahead check). If all checks pass, increase a counter. In order to make things 
+simpler I stored a 'last' variable which was initially set to the original position in the street 
+(then set to one behind the iterator, for each iteration).
+
+After finishing this problem, and thinking about other ways to complete it I found that it would also 
+be possible to simply add a '--' to the beginning and end of the string to eliminate the out of bounds 
+checks. This method may be easier, but it does edit one of the variables.
+
+ThrowTheBall - 
+
+This problem was once again quite simple. The framework was to have a while loop which ends when any 
+of the players have handled the ball M amount of times. The difficulty in this problem lay in making 
+sure everything "rolled over" correctly, such that 0 would pass to 8 if necessary rather than -2. This 
+proved to be a little troublesome, but after going through with pen and paper I was able to figure out 
+what to do.
+
+I also found that I was running into a undefined behaviour error because initially I was using an 
+array and not setting all the values to 0, causing erratic behaviour.

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+thesum=0
+
+
+for v in $1;do
+	s=$( stat $v -c %s)
+	thesum=$(( $thesum + $s))
+	echo $thesum
+done

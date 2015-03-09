@@ -1,0 +1,54 @@
+Mitchell Anderson - a1647264
+Week 6 PSSD Journal
+
+Overview - 
+	This week was tough for me, some of the problems were quite difficult (to the point where I could not answer them).
+I attempted to formulate solutions for all of this weeks problems (except BerryPacker) and was able to come up with methods
+I thought may have been crrect, but i was unable to code them. For example I was attempted to use Dijkstras algorithm to solve
+forest garbage, but I couldnt figure out how to put them in the "Queue" in the correct order.
+
+BlackAndWhiteSolitaire - 
+	Initially approaching this problem I looked at how I would be able to minimize the amount of flips required. I spent some
+time trying to come up with a method that would minimize the amount of flips before a much more simple answer became obvious. There
+is actually only 2 patterns the cards can follow "BWBWBW.....BW" or "WBWBWB.....WB" given these patterns it was simple to code an answer
+that checked these patterns against the original string and checked the differences. This problem was a classic example of using the cosntraints 
+wisely, something that I often overlook. 
+
+I ended up making this problem a lot more difficult for myself because I didnt stop and really try to understand the problem before jumping
+into coding a solution (which is something I am prone to doing).
+
+GoodHours - 
+	Goodhours is a classic string manipulation problem and I approached it as such. I was able to quite quickly formulate a basic algorithm,
+check each time, if its good increment then move, if not just move. This is a simple approach which not much underlying difficulty. Where I struggled
+in this problem is manipulating the strings (which represented time). I probably had much more touble than I should have writing up a function to simply
+increase the time by 1 minute (in 24hr time). It was obvious where the "rollovers" were (at > 9 minutes, > 9 minutes and < 23 hrs and finally > 9 mins
+hrs == 23). 
+
+Regardless GoodHours was good practice for a learning more about how to code and manipulate strings even if the underlying algorithm was not hard
+to grasp.
+
+ColorfulRabbits - 
+	I began ColorfulRabbits by thoroughly reading the problem description and attempting to go through cases by hand (an approach that I should
+take more often, which can lead to an easier mathematical solution rather than a programming solution). I was able to see that there is obviously
+some form of overlap between the answers. For example if two rabbits both answer "2" there must be some way to see how they can be grouped together.
+Taking this theory I was able to see that I could sort the answer vector and group rabbits wit the same answer. For example if 2 rabbits answered 2 there
+is some overlap and only 3 rabbits are needed for this statement to be true. It was also important that if a rabbit answers 2 and more than 2 others do aswell
+we cant group them all together (i.e. each rabbits answer can only be grouped with rabbitanswer+1 other rabbit answers).
+
+CountExpressions - 
+	I was able to recognize that CountExpressions could be solved using a quite simple recursion which is helped by the tight constraints of the problem.
+I was able to recognize that there were only a few simple choices to be made at each step. If we have > 0 amount of each number to put it, try putting it in
+the expression with a +,-,* respectively. I think this problem, given to me 3 or 4 weeks ago would have been quite difficult and I would probably not have been able 
+to come up with a solution as my skills with recursion were weak.
+
+The only trouble I had with this question was that I was not properly increasing the "count" variable found inside the recursive call (i.e. each call wasnt proceeded by
+a count+=) so i was ending up with incorrect results.
+
+MonstersValley2 - 
+	MonstersValley2 was a problem that I initially had a lot of difficulty with when I first attempted it (in the week it was released). I was able to visualise a solution
+but I was unable to actually code an answer. This has been a recurring problem for me throughout the semester so far. My solution was to use a binary vector, where 1 represented
+"buy" and 0 represented "not buy". This approach is not necessarily the most efficient, as it has to go through every combination. Looking further into the problem the sets never
+actually even need to be generated, rather inside the binary counting we can cut off any impossible answers.
+
+
+

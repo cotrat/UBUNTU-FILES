@@ -1,0 +1,16 @@
+#!/bin/bash
+
+
+for (( c=1; c<=$1; c++ ))
+do
+   echo "Welcome $c times"
+done
+
+ctr=0
+for f in $( ls -c); do
+	echo $f
+	$( ctr++ )
+  if [[ "$ctr" == "$1" ]]; then
+		break
+	fi
+done

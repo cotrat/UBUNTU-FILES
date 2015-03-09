@@ -1,0 +1,22 @@
+#!/bin/bash
+
+optind=1
+divnum=1
+char='#'
+file="input"
+
+for x in $@;do		
+		if [[ $x == '-c' ]]; then
+			cc=1
+		fi
+		if [[ $x == '-r' ]]; then
+			char=${@:$((optind+1)):1}
+		fi
+		if [[ $x == '-s' ]]; then
+			divnum=${@:$((optind+1)):1}
+		fi
+		if [[ -a $x ]]; then
+			file=$x
+		fi
+		optind=$(($optind+1))
+done

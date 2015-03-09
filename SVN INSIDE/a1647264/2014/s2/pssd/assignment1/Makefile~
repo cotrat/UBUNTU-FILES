@@ -1,0 +1,2 @@
+fixBinomia: 
+	g++ fixBinomia.cpp -o fixBinomia

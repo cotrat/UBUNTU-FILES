@@ -1,0 +1,69 @@
+#!/bin/bash
+optind=1
+divnum=1
+char='#'
+file="input"
+ctr=0
+for x in $@;do		
+		if [[ $x == '-c' ]]; then
+			cc=1
+		fi
+		if [[ $x == '-r' ]]; then
+			char=${@:$((optind+1)):1}
+		fi
+		if [[ $x == '-s' ]]; then
+			divnum=${@:$((optind+1)):1}
+		fi
+		if [[ -a $x ]]; then
+			file=$x
+		fi
+		optind=$(($optind+1))
+done
+
+if [[ "$file" == "input" ]]; then
+	while read line 
+	do	
+		if [[ $ctr -eq 0 ]]; then
+			first_ever=$( echo $line | cut -d' ' -f1 )
+			ctr=1
+		fi
+	
+		first=$( echo $line | cut -d' ' -f1 )
+		second=$( echo $line | cut -d' ' -f2 )
+		histo_array[$first]="$second"
+	done
+else
+	while read line 
+	do	
+		if [[ $ctr -eq 0 ]]; then
+			first_ever=$( echo $line | cut -d' ' -f1 )
+			ctr=1
+		fi
+	
+		first=$( echo $line | cut -d' ' -f1 )
+		second=$( echo $line | cut -d' ' -f2 )
+		histo_array[$first]="$second"
+
+	
+	done < "$file"
+fi
+
+d=''
+#for(( i=$first_ever; i<=$first; i++ ))
+#do
+  	the_count=${histo_array[$i]}
+	if [[ $the_count -ge 0 ]]; then
+		for (( c=1; c<=$(( the_count/divnum )); c++ ))
+		do
+   			d=$d${char}
+		done
+	fi
+
+	if [[ $cc == '1' ]]; then
+		printf "%3s%5s %s\n" $i $the_count $d		
+	else
+		printf "%3s %s\n" $i $d
+	fi
+
+	d=''
+#done

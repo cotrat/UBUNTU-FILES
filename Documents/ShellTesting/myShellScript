@@ -1,0 +1,17 @@
+#!/bin/bash
+
+for v in $@;do
+	echo $v
+	echo
+done
+
+while read line 
+do
+	
+	if [[ "$line" == *"$1"* ]]; then
+		echo $line
+	fi
+
+done < phBook.txt
+
+

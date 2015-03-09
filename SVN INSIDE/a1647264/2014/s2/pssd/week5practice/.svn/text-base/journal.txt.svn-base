@@ -1,0 +1,40 @@
+PSSD Week5 Journal
+Mitchell Anderson a1647264
+
+Paternity Test - 
+	I decided to do paternity test this week (despite it being a previous weeks question)
+because I had previously overlooked it. Whilst the method for soling is not particularly difficult
+(it is simply looping through and making checks, no recursion etc) I could not grasp it when
+I first attempted the problem. These types of problems are great for learning how to properly
+use constraints. If I had not read the constraints properly (as I had not done originall) this problem
+would have been much more difficult.
+
+RunLengthEncoding - 
+	RunLengthEncoding was not a particularly difficult problem. It involved finding numbers and
+multiplying the character after it to create a string. The only problem I had with this question
+was making sure I got the indexing correct to 'grab' the characters from the right place. This type
+of questions is good to increase knowledge of C++ libraries and a good question to practice speed.
+
+TomekPhone - 
+	Suprisingly, for a 4star question, tomek phone was not too difficult. I was immediately
+able to recognize the pattern needed to complete the question. The most pressed keys need to be
+in the "earliest" places in the "keysize" array. This is because a key which is pressed 10,000
+times in slot 1 only 'costs' 10,000 but place in slot 7 would 'cost' 70,000. Once this concept 
+is realised, it is not difficult (through multiple different methods) to do. My approach is not
+necessarily the most effective, as I attempted to "spell out" exactly what I was doing and actually
+created a vector to store each "key" so it would be beneficial to look for a more optimal solution.
+
+SimpleDuplicateRemover - 
+	This question required a little bit of thinking on how to order the output array to fit
+the constraints of the problem. For my answer I ran through (from back to front) of the input array
+and put each value that was not already in the output array (i.e. a unique value). The problem with
+this method is that it results in the output array being in reverse order, a simple enough problem to
+fix.
+
+QuickSums - 
+	QuickSums was another problem from a previous week. I had attempted quicksums previously
+but had not been able to complete the problem. This was due to at the time of my first attempt my
+skills with recursion were not well developed and although I could visualise how I wanted to answer
+the questions but i was unable to code my answer. I also learned other methods to solve problems
+like this (and similar problems), binary counting. Using a binary array where 1 correlates to a
+'+' and 0 correlates to nothing, all combinations can be ran through

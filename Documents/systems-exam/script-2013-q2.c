@@ -1,0 +1,8 @@
+#include <stdio.h>
+#define SQR(x) (x*x)
+int main()
+{
+	int x= 5;
+	int xsq= SQR(x+1);
+	printf("%d\n",xsq);
+}

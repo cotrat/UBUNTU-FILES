@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#param1=$(echo "$1" | cut -d" " -f1)
+#param2=$(echo "$2" | cut -d" " -f1)
+
+#args1=${1:${#param1}+1}
+
+eval "$1"
+
+
+# ${#string} length of string

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#This works as intended
+if [[ "$#" == 0 ]];then
+	read theString
+	( echo "$theString" | tr -d ",.?!:;()[]\"\'" )
+elif [[ "$#" == 1 ]];then
+	( tr -d ",.?!:;()[]\"\'" < "$1" )
+elif [[ "$#" -gt 1 ]];then
+	optind=1
+	for x in $@;do		
+		if [[ $x == '-r' ]]; then
+			( tr -d "${@:$((optind+1)):1}" < "$1" )
+		fi
+		optind=$(($optind+1))
+	done
+fi
+
+
+
+
+

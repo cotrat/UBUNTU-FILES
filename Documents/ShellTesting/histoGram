@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+if [[ "$#" == 0 ]];then
+	read theString
+	echo "$theString" | awk '{print length}' | sort -n | uniq -c | sed -e 's/^ *//' | awk '{ for (i=NF; i>1; i--) printf("%s ",$i); printf("%s\n",$1); }'
+
+else
+	awk '{print length}' $1 | sort -n | uniq -c | sed -e 's/^ *//' | awk '{ for (i=NF; i>1; i--) printf("%s ",$i); printf("%s\n",$1); }'
+fi
+
+

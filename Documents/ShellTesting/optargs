@@ -1,0 +1,11 @@
+#!/bin/bash
+optind=1
+for x in $@;do
+		
+		if [[ $x == '-r' ]]; then
+			
+		fi
+	#echo ${@:$((optind+1)):1}
+done
+
+

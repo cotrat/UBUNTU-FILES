@@ -1,0 +1,1468 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Prac2 	AdventureMap                                                  ;
+;                                                                             ;
+;       Entry   .start Main                                                   ;
+;                                                                             ;
+;       Written David Knight, 26feb08                                         ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;       Global constant definitions                                           ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg constant
+
+AsciiCR	.equ	16#0D			;Carriage return
+AsciiLF	.equ	16#0A			;Line feed
+
+	.start	main
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;       Tuning parameters                                                     ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+MAXRESP	.equ	40			;Max length of a command
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;       String constants                                                      ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg	data
+
+
+msgSpc	.ascii	" \0"
+msgCol	.ascii	": \0"
+msgAt	.ascii	"You are at \0"
+msgCant	.ascii	"You can't go that way\r\n\0"
+msgCrlf	.ascii	"\r\n\0"
+msgDash .ascii	"-----\0"
+msgDir	.ascii	"Direction not specified\r\n\0"
+msgDup	.ascii	"Node already exists\r\n\0"
+msgNotE	.ascii	"Node does not exist\r\n\0"
+msgLnk	.ascii	"There are still links to this node\r\n\0"
+msgNam	.ascii	"Name not specified\r\n\0"
+msgUnk	.ascii	"Unknown command\r\n\0"
+msgUnkD	.ascii	"Unknown direction\r\n\0"
+msgNMem	.ascii	"No memory left\r\n\0"
+
+ePrompt	.ascii	"explore: \0"
+cPrompt	.ascii	"create: \0"
+
+
+	
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;       Main variables                                                        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.align	2
+
+here	.wordu	0			;Our present position in the map
+command .space	MAXRESP			;Command typed by the user
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;       Program begins here                                                   ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	.seg code
+
+main	addui	r1,r0,start		;Initialise our location in the map
+	sw	here,r1
+
+	;;;;;;;;;;;;;;;;;;;;;;;;
+	;;;;;;;;;;;;;;;;;;;;;;;;
+	; Explore mode         ;
+	;;;;;;;;;;;;;;;;;;;;;;;;
+	;;;;;;;;;;;;;;;;;;;;;;;;
+
+explore
+	lw	r1,here			;Print inital position
+	jal	exPrint
+
+explore1
+	addui	r1,r0,ePrompt		;Print prompt
+	jal	StrPut
+
+	addui 	r1,r0,command		;Get response
+	addui 	r2,r0,MAXRESP
+	jal	StrGet
+
+	addui	r1,r0,msgCrlf		;Print CR/LF
+	jal	StrPut
+
+	addui 	r1,r0,command		;Parse the response
+	jal	parse
+	beqz	r3,explore1		;Ignore if no response
+
+;	Dispatch the command
+
+      	lb	r3,(r3)			;Get command char
+	andi	r3,r3,16#5F		;(Crudely!) convert lower to upper case
+
+	seqi	r2,r3,"N"		;North?
+	bf	r2,explore2		;No
+
+	jal	exNorth			;Go north
+	j	explore6
+
+explore2
+	seqi	r2,r3,"E"		;East?
+	bf	r2,explore3		;No
+
+	jal	exEast			;Go east
+	j	explore6
+
+explore3
+	seqi	r2,r3,"S"		;South?
+	bf	r2,explore4
+
+	jal	exSouth			;Go south
+	j	explore6
+
+explore4
+	seqi	r2,r3,"W"		;West?
+	bf	r2,explore5
+
+	jal	exWest			;Go west
+	j	explore6
+
+explore5
+	seqi	r2,r3,"C"		;Change mode?
+	bt	r2,create		;Yes
+
+;	Undefined command
+
+	addui	r1,r0,msgUnk		;Unknown command
+	jal	StrPut
+
+explore6
+	j	explore1
+
+	;;;;;;;;;;;;;;;;;;;;;;;;
+	;;;;;;;;;;;;;;;;;;;;;;;;
+	; Create mode          ;
+	;;;;;;;;;;;;;;;;;;;;;;;;
+	;;;;;;;;;;;;;;;;;;;;;;;;
+
+create	addui	r1,r0,cPrompt		;Print prompt
+	jal	StrPut
+
+	addui 	r1,r0,command		;Get response
+	addi 	r2,r0,MAXRESP
+	jal	StrGet
+
+	addui	r1,r0,msgCrlf		;Print CR/LF
+	jal	StrPut
+
+	addui	r1,r0,command		;Parse the response
+	jal	parse
+	beqz	r3,create		;Ignore blank lines
+
+;	Dispatch the command
+
+      	lb	r3,(r3)			;Get command char
+	andi	r3,r3,16#5F		;(Crudely) convert lower to upper case
+
+	seqi	r2,r3,"P"		;Print?
+	bf	r2,create1		;No
+
+	jal	crPrint			;Print the map
+	j	create7
+
+create1	seqi	r2,r3,"Z"		;Zap?
+	bf	r2,create2		;No
+
+	jal	crZap			;Zap the map
+	j	create7
+
+create2	seqi	r2,r3,"N"		;New?
+	bf	r2,create3		;No
+
+	jal	crNew			;New map node
+	j	create7
+
+create3	seqi	r2,r3,"D"		;Delete?
+	bf	r2,create4		;No
+
+	jal	crDel			;Delete node from map
+	j	create7
+
+create4	seqi	r2,r3,"H"		;Hook?
+	bf	r2,create5		;No
+
+	jal	crHook			;Hook two nodes together
+	j	create7
+
+create5	seqi	r2,r3,"U"		;Unhook?
+	bf	r2,create6		;No
+
+	jal	crUnhk			;Unhook two nodes
+	j	create7
+
+create6	seqi	r2,r3,"X"		;Explore?
+	bt	r2,explore		;Yes
+
+;	Undefined command
+
+	addui	r1,r0,msgUnk		;Unknown command
+	jal	StrPut
+
+create7	j	create
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Parse   Parse a null-terminated input string                          ;
+;                                                                             ;
+;       Entry   r1= ->string                                                  ;
+;               jal Parse                                                     ;
+;                                                                             ;
+;       Exit    r3= ->first param                                             ;
+;               r4= ->Second param                                            ;
+;               r5= ->Third param                                             ;
+;               r6= ->Fourth param                                            ;
+;               If a parameter is missing, the pointer will be NULL (0)       ;
+;                                                                             ;
+;       Uses    r1,r2  (restores r7,r8)                                       ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+
+parseNewR31		.space 4
+parseNewR1		.space 4
+parseNewR7		.space 4
+parseNewR8		.space 4
+
+	.seg code
+parse		
+		sw	parseNewR31,r31
+		sw	parseNewR7,r7
+		sw	parseNewR8,r8
+		clr	r8		
+		clr	r4
+		clr	r5
+		clr 	r6
+
+		sw	parseNewR1,r1
+
+		addu	r7,r0,r1	; r7 = r1
+
+		clr	r2
+
+		
+parseStr1L	lb	r1,(r7)		; r1 = char
+		beqz	r1,ParseDone	; r1 = \0 ?
+
+		seqi	r2,r1," "	; r1 = " "?
+		bf	r2,nonNull
+
+		add	r10,r0,r7	; r10 = r7
+		sb	(r10),r0	; ->r10 = \0 (store null terminator)
+		seqi	r2,r8,0		; if 0, this is start of 2nd str
+		bt	r2,secondS
+		seqi	r2,r8,1		; if 1, this is start of 3rd str
+		bt	r2,thirdS
+		seqi	r2,r8,2		; if 2, this is start of 4th str
+		bt	r2,forthS
+		
+				
+nonNull		
+		addui	r7,r7,1		; r7++
+		j	parseStr1L
+
+secondS		addi	r4,r7,1		; r4 (second str) begins at r7+1
+		addui	r8,r8,1
+		j	nonNull
+
+thirdS		addi	r5,r7,1		; r5 (third str) begins at r7+1
+		addui	r8,r8,1
+		j	nonNull
+
+forthS		addi	r6,r7,1		; r6 (fourth str) begins at r7+1	
+		addui	r8,r8,1
+		j	ParseDone
+
+ParseDone	
+		lw	r3,parseNewR1
+		lw	r7,parseNewR7
+		lw	r8,parseNewR8
+		lw	r31,parseNewR31
+		jr	r31
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;	exNorth (explore) Go North in the map                                 ;
+;                                                                             ;
+;	Entry	jal exNorth                                                   ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5                                                ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+expR31		.space 4
+	.seg code
+exNorth		
+		sw	expR31,r31		; store R31
+		lw	r2,here			; r2 = here
+
+		lw	r1,mapN(r2)		; r1 = here.north
+		beqz	r1,exNorthFail		; exists?
+		sw	here,r1			; here = here.north
+
+		jal	exPrint			; print location
+		lw	r31,expR31
+		jr	r31
+
+exNorthFail	
+		addui	r1,r0,msgCant
+		jal	StrPut
+		lw	r31,expR31
+		jr	r31
+		
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;	exEast (explore) Go East in the map                                   ;
+;                                                                             ;
+;	Entry	jal exEast                                                    ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5                                                ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+exEast		
+		sw	expR31,r31		; store R31
+		lw	r2,(here)		; r2 = here
+
+		lw	r1,mapE(r2)		; r1 = here.east
+		beqz	r1,exEastFail		; exists?
+		sw	here,r1			; here = here.east
+
+		jal	exPrint			; print location
+		lw	r31,expR31
+		jr	r31
+
+exEastFail	
+		addui	r1,r0,msgCant
+		jal	StrPut
+		lw	r31,expR31
+		jr	r31
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;	exSouth (explore) Go South in the map                                 ;
+;                                                                             ;
+;	Entry	jal exSouth                                                   ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5                                                ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+exSouth		
+		sw	expR31,r31		; store R31
+		lw	r2,(here)		; r2 = her
+
+		lw	r1,mapS(r2)		; r1 = here.south 
+		beqz	r1,exSouthFail		; exists?
+		sw	here,r1			; here = here.south
+
+		jal	exPrint			; print actual location
+		lw	r31,expR31
+		jr	r31
+
+exSouthFail	
+		addui	r1,r0,msgCant
+		jal	StrPut
+		lw	r31,expR31
+		jr	r31
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;	exWest  (explore) Go West in the map                                  ;
+;                                                                             ;
+;	Entry	jal exWest                                                    ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5                                                ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+exWest		
+		sw	expR31,r31		; store R31
+		lw	r2,(here)		; r2 = here
+
+		lw	r1,mapW(r2)		; r1 = here.west
+		beqz	r1,exWestFail		; exists?
+		sw	here,r1			; here = here.west
+
+		jal	exPrint			; print location
+		lw	r31,expR31
+		jr	r31
+
+exWestFail	
+		addui	r1,r0,msgCant
+		jal	StrPut
+		lw	r31,expR31
+		jr	r31
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;	exPrint (explore)Print our present location in the map                ;
+;                                                                             ;
+;	Entry	r1= ->map node                                                ;
+;               jal exPrint                                                   ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5                                                ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+exPrintR31	.space 4
+
+	.seg code
+exPrint	
+	sw	exPrintR31,r31
+	addu	r3,r0,r1	; store the old r1
+	addui	r1,r0,msgAt	; print "msgAt"
+	jal	StrPut
+	addu	r1,r0,r3
+	jal	StrPut
+	addui	r1,r0,msgCrlf
+	jal	StrPut	
+	lw	r31,exPrintR31
+	jr	r31
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       crPrint (create)Print the map                                         ;
+;                                                                             ;
+;       Entry   jal crPrint                                                   ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5                                                ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+crPrintR31	.space 4
+crPrintR6	.space 4
+
+	.seg code	
+crPrint	
+		sw	crPrintR31,r31		; store R31
+		sw	crPrintR6,r6
+		addi	r3,r0,0			; r3 = itr
+		addui	r5,r0,nodeArr		; r5 -> nodeArr
+		
+		lw	r6,nodeCnt		; r6 = nodeCnt
+
+crPrintLoop	slt	r4,r3,r6		; itr < nodeCnt ?
+		bf	r4,crPrintDone
+		lw	r1,(r5)			; r1 = node
+		beqz	r1,crPrintInc		; if 0 (deleted node) move to next
+
+		jal	crPrintDet
+
+
+
+		addi	r3,r3,1			; Increment loop counter and pointer position
+crPrintInc	addui	r5,r5,4
+		j	crPrintLoop
+
+crPrintDone	
+		lw	r6,crPrintR6
+		lw	r31,crPrintR31
+		jr	r31
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       crPrintDet Print Name + links of a map node                           ;
+;                                                                             ;
+;       Entry   jal crPrintDet						      ;
+;		r1 = ->node                                   	      	      ;
+;                                                                             ;
+;       Uses    r1,r2,(restores r3)                                           ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+crPrintDetR3	.space 4	
+crPrintDetR31	.space 4
+	.seg code
+crPrintDet
+		sw 	crPrintDetR31,r31
+		sw	crPrintDetR3,r3
+		addu	r3,r0,r1		; r3 = r1
+		jal 	StrPut			; print node.name
+		addui	r1,r0,msgCol		; print a ":"
+		jal	StrPut
+		
+
+		addui	r1,r3,mapN		; check if north exists and print
+		lw	r1,(r1)
+		bnez	r1,crPrintN
+		addui	r1,r0,msgDash
+		jal	StrPut
+		j	crPrintNN
+
+crPrintN	jal	StrPut
+			
+crPrintNN	addui	r1,r0,msgSpc		; print a space
+		jal	StrPut
+		addui	r1,r3,mapE		; check if east exists and print
+		lw	r1,(r1)
+		bnez	r1,crPrintE
+		addui	r1,r0,msgDash
+		jal	StrPut	
+		j	crPrintEE
+
+crPrintE	jal	StrPut
+
+			
+crPrintEE	addui	r1,r0,msgSpc		; print a space
+		jal	StrPut
+		addui	r1,r3,mapS		; check if south exists and print
+		lw	r1,(r1)
+		bnez	r1,crPrintS
+		addui	r1,r0,msgDash
+		jal	StrPut
+		j	crPrintSS	
+
+crPrintS	jal	StrPut
+
+
+crPrintSS	addui	r1,r0,msgSpc		; print a space
+		jal	StrPut
+		addui	r1,r3,mapW		; check if west exists and print
+		lw	r1,(r1)
+		bnez	r1,crPrintW
+		addui	r1,r0,msgDash
+		jal	StrPut
+		j	next	
+
+crPrintW	jal	StrPut
+
+
+next		addui	r1,r0,msgCrlf
+		jal	StrPut
+		lw	r3,crPrintDetR3
+		lw	r31,crPrintDetR31
+		jr	r31
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       crZap   (create)Zap the whole map                                     ;
+;                                                                             ;
+;       Entry   jal crZap                                                     ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4                                                   ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+crZapR31	.space 4
+crZapR5		.space 4
+crZapR6		.space 4
+crZapR7		.space 4
+
+	.seg code
+crZap	
+	
+	
+		sw	crZapR31,r31
+		addi	r3,r0,1
+		addui	r5,r0,nodeArr	; r5 -> nodeArr
+		addui	r5,r5,4
+		
+		lw	r6,nodeCnt
+
+crZapLoop	slt	r4,r3,r6
+		bf	r4,crZapDone
+		lw	r1,(r5)
+		beqz	r1,crZapInc
+		jal	memPut		; Free the memory
+		sw	(r5),r0
+		addi	r3,r3,1
+crZapInc	addui	r5,r5,4
+		j	crZapLoop
+		
+
+		
+		
+
+crZapDone	addui	r5,r0,nodeArr	; r5 -> nodeArr
+		lw	r5,(r5)
+		addui	r3,r5,mapCnt
+		addui	r1,r0,1
+		sh	(r3),r1
+		sw	2(r3),r0
+		sw	6(r3),r0
+		sw	10(r3),r0
+		sw	14(r3),r0
+		sw	18(r3),r0
+
+
+
+		addui	r1,r0,1
+		sw	nodeCnt,r1
+		lw	r31,crZapR31
+		jr	r31
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       crNew   (create) new node in the map                                  ;
+;                                                                             ;
+;       Entry   r4= ->NodeName                                                ;
+;               jal crNew                                                     ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5     (6,7,8 are restored)                       ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+crNewR31	.space 4
+crNewR6		.space 4
+crNewR7		.space 4
+crNewR8		.space 4
+	.seg code
+crNew
+	sw	crNewR31,r31
+	sw	crNewR6,r6
+	sw	crNewR7,r7
+	sw	crNewR8,r8
+
+	add	r1,r0,r4			; r->NodeName
+	jal	findNode
+	bnez	r1,crNewCant			; if NodeName exists
+	
+	lw	r8,nodeCnt			; Increment the node count
+	addui	r8,r8,1
+	sw	nodeCnt,r8
+
+	jal	memGet				; Grab the next free memory
+	beqz	r1,crNewNoMem
+
+	add	r7,r0,r1		; Remember r1 (the freemem)
+
+	add	r2,r0,r0		; Clear r2
+
+					; Loop through all the bytes and store them from r1 to 17(r1)
+					; if > 18 bytes put a null terminator in the 18th byte
+
+crNewL	lbu     r5,0(r4)                ; get next char from Str
+	sb      0(r1),r5                ; copy next byte into node
+	beqz	r5,crNewTerm
+	seqi	r6,r2,17
+	bt	r6,crNewTerm
+	
+	addui	r1,r1,1			; Move across in node
+	addui	r4,r4,1			; Move across in string
+	addui	r2,r2,1			
+	j	crNewL
+	
+	
+	
+crNewTerm
+	add	r1,r0,r7
+	sb	17(r1),r0
+	sh	18(r1),r0		; 1 over begins the link count
+	sw	20(r1),r0		; 3 over begins the North ptr
+	sw	24(r1),r0
+	sw	28(r1),r0
+	sw	32(r1),r0
+	
+					; To make the print function work, we need to get to the first place
+					; in the node array that is either 0, or just add to the end
+	
+		add	r4,r0,r0
+		addui	r3,r0,nodeArr		; get to the start of the node array
+		subui	r8,r8,1
+
+crNewNodeL	lw	r2,(r3)			; get what is in the node array
+		beqz	r2,crFreeNode		; if 0, put in that spot
+		seq	r2,r4,r8
+		bt	r2,crFreeNode
+		addui	r4,r4,1
+		addui	r3,r3,4			; move to next ptr in node array
+		j	crNewNodeL
+
+
+crFreeNode
+
+	sw	(r3),r1
+	j	crNewResReg
+	
+crNewNoMem
+	addui	r1,r0,msgNMem
+	jal	StrPut
+	j	crNewResReg
+
+crNewCant
+	addui	r1,r0,msgDup
+	jal	StrPut
+	j	crNewResReg
+
+crNewResReg
+	lw	r6,crNewR6
+	lw	r7,crNewR7
+	lw	r8,crNewR8
+	lw	r31,crNewR31
+	jr	r31
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       crDel (create)Delete a node from the map                              ;
+;                                                                             ;
+;       Entry   r4= ->NodeName to delete                                      ;
+;               jal crDel                                                     ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5                                                ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+crDelR31	.space 4
+crDelR6		.space 4
+crDelR7		.space 4
+crDelR8		.space 4
+
+	.seg code
+crDel	
+	sw	crDelR31,r31
+	sw	crDelR6,r31
+	sw	crDelR7,r31
+	sw	crDelR8,r31
+	
+	add	r1,r0,r4
+	jal	findNode
+	add	r7,r0,r1			; r7 contains r1
+
+	beqz	r1,crDelCant			; if NodeName doesnt exist
+	addui	r1,r1,mapCnt			; if the link count is too high
+	lh	r1,(r1)
+	bnez	r1,crDelLinkCant
+
+	; Must set the value in the node array to 0 in order for print and other functions to work
+
+		addui	r5,r0,nodeArr
+		add	r3,r0,r0
+		lw	r6,nodeCnt
+
+crDelNodeL	slt	r4,r3,r6		; i < nodeCnt ?
+		bf	r4,crDelDone
+		lw	r2,(r5)			; load in current node
+		beqz	r2,crDelNodeInc
+		add	r1,r0,r7		; load in the search node name
+		jal	StrCmp			; check if they are the same
+		beqz	r1,crDelDone
+		addi	r3,r3,1
+crDelNodeInc	addui	r5,r5,4
+		j	crDelNodeL
+
+
+crDelDone					; 
+
+	lw	r8,nodeCnt			; Decrement the node count
+	subui	r8,r8,1
+	sw	nodeCnt,r8
+	sw	0(r5),r0			; set the nodeArr value to 0	
+	add	r1,r0,r7
+	jal	memPut
+	j	crDelResReg
+
+
+crDelLinkCant
+	addui	r1,r0,msgLnk
+	jal	StrPut
+	j	crDelResReg
+
+crDelCant
+	addui	r1,r0,msgNotE
+	jal	StrPut
+	j	crDelResReg
+
+crDelResReg
+	addui	r1,r0,start
+	sw	here,r1
+	lw	r31,crDelR6
+	lw	r31,crDelR7
+	lw	r31,crDelR8
+	lw	r31,crDelR31
+	jr	r31
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       crHook (create)Hook two nodes together                                ;
+;                                                                             ;
+;       Entry   r4= ->fromName                                                ;
+;               r5= ->Direction to hook                                       ;
+;               r6= ->toName                                                  ;
+;               jal crHook                                                    ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5,r6                                             ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+crHookR31	.space 4
+crHookR7	.space 4
+	.seg code	
+crHook	
+	sw	crHookR31,r31
+	sw	crHookR7,r7
+	add	r1,r0,r4	; Check if fromNode exists
+	jal	findNode
+	beqz	r1,crHookNExist
+
+	add	r1,r0,r6	; Check if toName exists
+	jal	findNode
+	beqz	r1,crHookNExist
+
+	lb	r5,(r5)			;Get command char
+	andi	r5,r5,16#5F		;(Crudely) convert lower to upper case
+
+					; Check if the direction was valid
+	seqi	r1,r5,"N"
+	addui	r7,r0,mapN		; Set the offset
+	bt	r1,crHookVal
+
+	seqi	r1,r5,"E"
+	addui	r7,r0,mapE		; Set the offset
+	bt	r1,crHookVal
+
+	seqi	r1,r5,"W"
+	addui	r7,r0,mapW		; Set the offset
+	bt	r1,crHookVal
+
+	seqi	r1,r5,"S"
+	addui	r7,r0,mapS		; Set the offset
+	bt	r1,crHookVal
+	bf	r1,crHookBadDir
+
+
+crHookVal
+	add	r1,r0,r4	; Check if fromNode exists
+	jal	findNode
+	add	r3,r0,r1	
+
+	add	r1,r0,r6
+	jal	findNode
+	add	r4,r0,r1
+
+	add	r3,r3,r7			; Check if the link already exists
+	lw	r5,(r3)
+	beqz	r5,crHookValDone		
+	lh	r6,18(r5)			; If there is a link, trample it
+	subui	r6,r6,1
+	sh	18(r5),r6
+	
+	
+
+crHookValDone	
+		sw	(r3),r4
+		lh	r6,18(r4)			
+		addui	r6,r6,1
+		sh	18(r4),r6
+		lw	r7,crHookR7
+		lw	r31,crHookR31	
+		jr	r31
+		
+
+	
+crHookBadDir
+	addui	r1,r0,msgUnkD
+	jal	StrPut
+	lw	r7,crHookR7
+	lw	r31,crHookR31	
+	jr	r31
+
+crHookNExist
+
+	addui	r1,r0,msgNotE
+	jal	StrPut
+	lw	r7,crHookR7
+	lw	r31,crHookR31	
+	jr	r31
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       crUnhk (create)Unhook a link to a node                                ;
+;                                                                             ;
+;       Entry   r4= ->fromName                                                ;
+;               r5= ->Direction                                               ;
+;               jal crUnhk                                                    ;
+;                                                                             ;
+;       Uses    r1,r2,r3,r4,r5,r6                                             ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+crUnhkR6	.space 4
+crUnhkR31	.space 4
+	
+	.seg code
+crUnhk	sw	crUnhkR31,r31
+	sw	crUnhkR6,r6
+	add	r1,r0,r4	; Check if fromNode exists
+	jal	findNode
+	beqz	r1,crUnhkNExist
+
+	lb	r5,(r5)			;Get command char
+	andi	r5,r5,16#5F		;(Crudely) convert lower to upper case
+
+					; Check if the direction was valid
+	seqi	r2,r5,"N"
+	addui	r6,r0,mapN		; Set the offset
+	bt	r2,crUnhkVal
+
+	seqi	r2,r5,"E"
+	addui	r6,r0,mapE		; Set the offset
+	bt	r2,crUnhkVal
+
+	seqi	r2,r5,"W"
+	addui	r6,r0,mapW		; Set the offset
+	bt	r2,crUnhkVal
+
+	seqi	r2,r5,"S"
+	addui	r6,r0,mapS		; Set the offset
+	bt	r2,crUnhkVal
+	bf	r2,crUnhkBadDir
+
+crUnhkVal
+	add	r1,r1,r6		; r1 now points to the offset
+	lw	r5,(r1)			; load in the node
+	beqz	r5,crUhnkValDone	; there was no hook in this direction
+
+	sw	(r1),r0			; Set the link to nothing
+	lh	r6,18(r5)		; Decrement the link count of what it used to point to
+	subui	r6,r6,1
+	sh	18(r5),r6
+	
+	
+crUhnkValDone
+	lw	r31,crUnhkR31
+	lw	r6,crUnhkR6		
+	jr	r31
+
+crUnhkNExist	
+	addui	r1,r0,msgNotE
+	jal	StrPut
+	lw	r31,crUnhkR31
+	lw	r6,crUnhkR6
+	jr	r31
+
+crUnhkBadDir
+	addui	r1,r0,msgUnkD
+	jal	StrPut
+	lw	r31,crUnhkR31
+	lw	r6,crUnhkR6
+	jr	r31
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       findNode find a node in the map by name                               ;
+;                                                                             ;
+;       Entry   r1= ->targetName (a string)                                   ;
+;               jal crNew                                                     ;
+;                                                                             ;
+;       Exit    r1= ->node, if found                                          ;
+;               r1= 0, if not found                                           ;
+;                                                                             ;
+;       Uses    r1,r2 (r3,r4,r5,r6,r7 are all restored)                       ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+findNodeR31	.space 4
+findNodeR3	.space 4
+findNodeR4	.space 4
+findNodeR5	.space 4
+findNodeR6	.space 4
+findNodeR7	.space 4
+
+	.seg code	
+findNode 
+		sw	findNodeR31,r31		; Store Registers
+		sw	findNodeR3,r3		
+		sw	findNodeR4,r4
+		sw	findNodeR5,r5
+		sw	findNodeR6,r6
+		sw	findNodeR7,r7
+
+		;addui 	r1,r0,command		;Get response
+		;addi 	r2,r0,MAXRESP
+		;jal	StrGet
+
+		add	r7,r0,r1		; r7->targetName
+
+		addi	r3,r0,0
+		addui	r5,r0,nodeArr		; r5 -> nodeArr
+		
+		lw	r6,nodeCnt
+
+findNodeL	slt	r4,r3,r6		; i < nodeCnt ?
+		bf	r4,findNodeD
+		lw	r1,(r5)			; load in current node
+		beqz	r1,findNodeInc
+		add	r2,r0,r7		; load in the search node name
+		jal	StrCmp			; check if they are the same
+		beqz	r1,findNodeDF
+		addi	r3,r3,1
+findNodeInc	addui	r5,r5,4
+		j	findNodeL
+
+findNodeD
+		;addui	r1,r0,msgNF
+		;jal	StrPut
+		add	r1,r0,r0		; set the return to 0
+		;halt
+		j	findNodeRes
+findNodeDF	
+		;addui	r1,r0,msgF
+		;jal	StrPut
+		addu	r1,r0,r5		; PTR to the node in the array
+		lw	r1,(r1)			; the actual node
+		;halt
+		j	findNodeRes
+
+findNodeRes					; Restore Registers and Return
+		lw	r31,findNodeR31
+		lw	r3,findNodeR3
+		lw	r4,findNodeR4
+		lw	r5,findNodeR5
+		lw	r6,findNodeR6
+		lw	r7,findNodeR7
+		jr	r31
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Map storage area                                                      ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg constant
+;Constants: Offsets within the map-node data structure
+
+mapName	.equ	0			;Offset to name
+mapCnt	.equ	18			;Offset to hook-count
+mapN	.equ	20			;Offset to NORTH pointer
+mapE	.equ	24			;Offset to EAST pointer
+mapS	.equ	28			;Offset to SOUTH pointer
+mapW	.equ	32			;Offset to WEST pointer
+mapSize	.equ	36			;Size of a map node
+
+
+	.align	2
+
+	.seg data
+
+nodeCnt	.word	6			;Six nodes initially
+
+nodeArr	.wordu	start			;Array of pointers to map nodes
+	.wordu	deadEnd
+	.wordu	forest
+	.wordu	path
+	.wordu	cliff
+	.wordu	rocks
+	.space	4*14			;Space for 14 additional nodes
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Dynamic storage manager                                               ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg heap
+
+free	.wordu	free1
+
+;	We have six pre-built nodes
+
+start	.ascii	"Start\0            "
+	.half	5			;Deliberately wrong (Prevents deletion)
+	.wordu	forest
+	.wordu	cliff
+	.wordu	path
+	.wordu	deadEnd
+
+deadEnd	.ascii	"Dead-end\0         "
+	.half	1
+	.wordu	0
+	.wordu	start
+	.wordu	0
+	.wordu	0
+
+forest	.ascii	"Forest\0           "
+	.half	4
+	.wordu	start
+	.wordu	forest
+	.wordu	forest
+	.wordu	path
+
+
+path	.ascii	"Path\0             "
+	.half	3
+	.wordu	0
+	.wordu	forest
+	.wordu	cliff
+	.wordu	start
+
+
+cliff	.ascii	"Cliff\0            "
+	.half	2
+	.wordu	path
+	.wordu	rocks
+	.wordu	0
+	.wordu	start
+
+rocks	.ascii	"Rocks\0            "
+	.half	1
+	.wordu	0
+	.wordu	0
+	.wordu	0
+	.wordu	0
+
+free1	.wordu	free2
+	.space	mapSize-4
+
+free2	.wordu	free3
+	.space	mapSize-4
+
+free3	.wordu	free4
+	.space	mapSize-4
+
+free4	.wordu	free5
+	.space	mapSize-4
+
+free5	.wordu	free6
+	.space	mapSize-4
+
+free6	.wordu	free7
+	.space	mapSize-4
+
+free7	.wordu	free8
+	.space	mapSize-4
+
+free8	.wordu	free9
+	.space	mapSize-4
+
+free9	.wordu	free10
+	.space	mapSize-4
+
+free10	.wordu	free11
+	.space	mapSize-4
+
+free11	.wordu	free12
+	.space	mapSize-4
+
+free12	.wordu	free13
+	.space	mapSize-4
+
+free13	.wordu	free14
+	.space	mapSize-4
+
+free14	.wordu	0
+	.space	mapSize-4
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       memGet  Get a block of memory from the free list                      ;
+;                                                                             ;
+;       Entry   jal memGet                                                    ;
+;                                                                             ;
+;       Exit    r1=->memory, if available                                     ;
+;               r1= 0, if none available                                      ;
+;                                                                             ;
+;       uses    r1,r2                                                         ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg code
+
+memGet	lw	r1,free				;Get pointer to free-list
+	beqz	r1,memGet1			;Jump if empty
+
+	lw	r2,0(r1)			;free= free.next
+	sw	free,r2
+
+memGet1
+	jr	r31
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       memPut  Put a block of memory onto the free-list                      ;
+;                                                                             ;
+;       Entry   r1= -<Memory to be released                                   ;
+;                                                                             ;
+;       jal     memPut                                                        ;
+;                                                                             ;
+;       uses    r1,r2                                                         ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+memPut	lw	r2,free			;Put link into memblock
+	sw	0(r1),r2
+	sw	free,r1			;point to newly freed block
+	jr	r31
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       String-handling stuff                                                 ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       StrGet  Get a string from input                                       ;
+;                                                                             ;
+;       Entry   r1= ->Str                                                     ;
+;               r2= MaxLength                                                 ;
+;               jal StrGet                                                    ;
+;                                                                             ;
+;       Exit    r1= ->Str                                                     ;
+;               r2= StrLength                                                 ;
+;                                                                             ;
+;       Note    Must have r2>0                                                ;
+;                                                                             ;
+;       Uses    r2                                                            ;
+;                                                                             ;
+;       Written D Knight 8-Mar-98                                             ;
+;       Amended A Brown 30-May-01                                             ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+StrGetPtr .space 4
+StrGetLen .space 4
+StrGetR3  .space 4
+StrGetR4  .space 4
+StrGetR31 .space 4
+
+	.seg code
+StrGet	sw	StrGetR3,r3		;Save registers
+	sw	StrGetR4,r4
+	sw	StrGetR31,r31
+
+	sw	StrGetPtr,r1		;Save StrPtr
+	sw	StrGetLen,r2		;Save MaxLen
+
+	addui	r3,r1,0			;r3= StrPtr
+	subui	r2,r2,1			;Save space for sentinel
+	beqz	r2,StrGet2
+
+StrGet1	jal	Get			;Get a char
+	sb	(r3),r1			;Store it
+
+	sequi	r4,r1,AsciiCR		;CR?
+	bt	r4,StrGet2		;Yes
+	sequi	r4,r1,AsciiLF		;LF?
+	bt	r4,StrGet2		;Yes
+
+	jal	Put			;Echo if not CR or LF
+	addi	r3,r3,1			;Inc StrPtr
+	subui	r2,r2,1			;Decr space remaining
+	bnez	r2,StrGet1		;Loop if more
+
+StrGet2	sb	(r3),r0			;Append sentinel
+
+	addi	r1,r0,AsciiCR		;Print CR
+	jal	Put
+	addi	r1,r0,AsciiLF		;Print LF
+	jal	Put
+
+	lw	r1,StrGetLen		;Compute StrLength
+	sub	r2,r1,r2
+	lw	r1,StrGetPtr
+
+	lw	r31,StrGetR31		;Restore registers
+	lw	r4,StrGetR4
+	lw	r3,StrGetR3
+	jr	r31			;return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       StrPut  Put a null-terminated string to the screen                    ;
+;                                                                             ;
+;       Entry   r1= ->Str                                                     ;
+;               jal StrPut                                                    ;
+;                                                                             ;
+;       Uses    r1,r2                                                         ;
+;                                                                             ;
+;       Written D Knight 8-Mar-98                                             ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+StrPutR31 .space 4
+	.seg code
+StrPut	sw	StrPutR31,r31		;Save registers
+	
+	addui	r2,r1,0			;r2= StrPtr
+	j	StrPut2
+
+StrPut1	jal	Put			;Print the character
+	addui	r2,r2,1			;Inc StrPtr
+StrPut2	lbu	r1,(r2)			;Get next char
+	bnez	r1,StrPut1
+
+	lw	r31,StrPutR31		;Restore registers
+	jr	r31			;Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       StrCmp 	Compare two null-terminated strings                           ;
+;                                                                             ;
+;       Entry   r1= ->Str1                                                    ;
+;               r2= ->Str2                                                    ;
+;               jal StrCmp                                                    ;
+;                                                                             ;
+;       Exit    r1=-1 if Str1<Str2                                            ;
+;               r1=0  if Str1=Str2                                            ;
+;		r1=+1 if Str1>Str2                                            ;
+;                                                                             ;
+;       Uses    r1,r2                                                         ;
+;                                                                             ;
+;       Written D Knight 8-Mar-98                                             ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg data
+StrCmpR3 .space	4
+StrCmpR4 .space 4
+StrCmpR5 .space 4
+	.seg code
+StrCmp	sw	StrCmpR3,r3		;Save registers
+	sw	StrCmpR4,r4
+	sw	StrCmpR5,r5
+
+
+StrCmp1	lbu	r3,(r1)			;get next char from Str1
+	lbu	r4,(r2)			;get next char from Str2
+	sltu	r5,r3,r4		;ch1<ch2?
+	bt	r5,StrCmp2		;Yes
+
+	sgtu	r5,r3,r4		;ch1>ch2?
+	bt	r5,StrCmp3		;Yes
+
+	beqz	r3,StrCmp3		;Jump if end of string
+
+	addui	r1,r1,1			;Inc StrPtr1
+	addui	r2,r2,1			;Inc StrPtr2
+	j	StrCmp1
+
+StrCmp2	addi	r5,r0,-1		;Result is LESS
+
+StrCmp3	addui	r1,r5,0			;r1= result
+
+	lw	r5,StrCmpR5		;Restore registers
+	lw	r4,StrCmpR4
+	lw	r3,StrCmpR3
+	jr	r31			;And return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       StrCopy Copy a null-terminated string                                 ;
+;                                                                             ;
+;       Entry   r1= ->src source string                                       ;
+;               r2= ->dst destination string                                  ;
+;               jal StrCopy                                                   ;
+;                                                                             ;
+;       Uses    r1,r2                                                         ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+StrCopy	halt
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Basic terminal I/O stuff                                              ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Put     Displays a character on the screen                            ;
+;                                                                             ;
+;       Entry   r1= Char                                                      ;
+;               jal Put                                                       ;
+;                                                                             ;
+;       Uses    none                                                          ;
+;                                                                             ;
+;       Written D Knight and P Ashenden 29-Mar-2000                           ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg constant
+DspCtrl .equ	16#FFFF_FF08
+Dsp_Rdy	.equ	1<<7
+DspData	.equ	16#FFFF_FF0C
+
+	.seg data
+PutR2	.space	4
+
+	.seg code
+Put	sw	PutR2,r2		;Save r2
+Put1	lw	r2,DspCtrl		;Display ready?
+	andi	r2,Dsp_Rdy		 
+	bf	r2,Put1			;No,wait
+	sw	DspData,r1		;Display the character
+
+	lw	r2,PutR2		;Restore R2
+	jr	r31			;Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Get     Get a character from the Keyboard                             ;
+;                                                                             ;
+;       Entry   jal Get                                                       ;
+;                                                                             ;
+;       Exit    r1= Char                                                      ;
+;                                                                             ;
+;       Uses    r1                                                            ;
+;                                                                             ;
+;       Written D Knight and P Ashenden 29-Mar-2000                           ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg constant
+KbdCtrl	.equ	16#FFFF_FF00
+Kbd_Rdy	.equ	1<<7
+KbdData	.equ	16#FFFF_FF04
+	.seg data
+GetR2	.space 4
+	.seg code
+Get	sw	GetR2,r2		;Save R2
+Get1	lw	r2,KbdCtrl		;Character available?
+	andi	r2,Kbd_Rdy
+	bf	r2,Get1			;No,wait
+	lw	r1,KbdData		;Get the character
+
+	lw	r2,GetR2		;Restore R2
+	jr	r31			;Return

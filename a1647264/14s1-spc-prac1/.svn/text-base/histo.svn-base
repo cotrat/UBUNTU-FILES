@@ -1,0 +1,22 @@
+#!/bin/bash
+file="input"
+
+for x in $@;do
+	if [[ -a $x ]]; then
+		file=$x
+	fi
+done
+
+if [[ "$file" == "input" ]]; then
+	while read line; do
+		((histo_array[${#line}]++))
+	done
+else
+	while read line; do
+		((histo_array[${#line}]++))
+	done < "$file"
+fi
+
+for line in "${!histo_array[@]}"; do
+    printf "%s %s\n" "${line}" "${histo_array[$line]}"
+done

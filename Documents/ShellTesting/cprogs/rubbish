@@ -1,0 +1,60 @@
+#include <libgen.h>
+#include <string.h>
+#include <stdio.h>
+
+#include <unistd.h>
+//#include <stdio.h>
+//#include <errno.h>
+
+int main(int argc, char *argv[]) {
+
+char *dirc, *temp2, *bname[argc-1], *dname[argc-1], cwd[1024];
+char path[1024] = "foo/poo/etc/passwd";
+
+int x;
+char temp[1024];
+
+getcwd(path, sizeof(path));
+
+//Remove ./filepath
+for(x=1; x<argc; x++){
+dname[x-1] = strdup(path);
+if(argv[x][0] == '.' && argv[x][1] != '.'){
+argv[x] = argv[x]+2;
+}
+}
+
+//Remove ../filepath and alter path
+for(x=1; x<argc; x++){
+if(argv[x][0] == '.' && argv[x][1] == '.'){
+argv[x] = argv[x]+3;
+dirc = strdup(path);
+dname[x-1] = dirname(dirc);
+}
+}
+
+//Display path if file exists
+for(x=1; x<argc; x++){
+strcpy(temp, dname[x-1]);
+if(access(strcat(strcat(dname[x-1],"/"),argv[x]), F_OK) != -1){
+fprintf(stdout, "%s/%s\n", temp, argv[x]);
+} else {
+fprintf(stdout, "%s/\n", temp);
+}
+}
+
+
+
+/*dirc = strdup(path);
+basec = strdup(path);
+dname = dirname(dirc);
+bname = basename(basec);*/
+
+//getcwd(cwd, sizeof(cwd));
+
+//printf("dirname=%s, basename=%s\n", dname, bname);
+
+        //fprintf(stdout, "Current working dir: %s\n", path);
+
+return 0;
+

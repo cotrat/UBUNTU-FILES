@@ -1,0 +1,62 @@
+Mitchell Anderson - a1647264
+Week 7 PSSD Journal
+
+FairWorkLoad - 
+	Looking at FairWorkLoad I was able to see that It could be broken down into a binary decision style problem
+. Given the set of work amounts a decision could be made at eac spot, either cut the first workload
+off here or not, repeating for second, third, up to the amount of workers. This amounted to creating
+a vector with N (where N is the amount of workers - 1) 1's, where the 1's represented the cut off points.
+I did this using next permutation to create the next set of cut off points.
+
+I did have a slight struggle with this, even though I knew what I wanted to do I was not immediately
+able to code an answer. Once I had created this vector of 1's and 0's summing up everything between them 
+was quite easy.
+
+TaliluluCoffee - 
+	I was able to recognize after reading the problem description that a simple sort would be all
+that is required to solve this problem. Simply put we want to serve the highest tippers first in order
+to maximize their tips. This method works because any negative tip is ignored, obviously the customer
+cannot take money from the Coffee shop.
+
+One thing that I initially overlooked is that negative tips were not included. This cause my initial
+submission to be incorrect but was a simple fix once I was able to isolate what the problem was.
+
+VeryInterestingMovie - 
+	From an initial reading of this problem I formulated a solution whereby we can check
+how many students can sit in a row by checking how many empty seats their were and dividing by two.
+After running through some test cases by hand it became obvious there were a few edge cases where
+this method would not be possible.
+
+In order to overcome this hurdle I took the most simple approach. If the seat is a Y and the one
+to the left of it is not marked by a "T" then we increment a count and mark the seat as a "T". 
+This simple method avoids using any mathematical calculations which may fail on edge cases.
+
+LostParentheses - 
+	Reading this problem description it became obvious that there must be a "trick" to
+minimizing the value of the string. I was able to recognize that if we see a minus operator
+we want to make the value on the left as small as possible and the value on the right as large
+as possible. This led to me finding the first minus operator and adding everything on the left.
+Then I needed to check the string on the right. It was necessary to group everything (between the
+minuses) by doing this we can create a big value e.g. - 12 + 5 + 6 - 10 would become - (12+5+6) -10.
+Before I did this I created a function which simply summed up an expression string.
+
+Unfortunately I did not recognize that this sum function would actually only ever consider expressions
+with addition (as the subtraction was done outside the brackets) so my sum function was a lot 
+more complicated than it needed to be and I wasted a lot of time creating and testing it.
+
+MinimalDifference - 
+	Reading this problem it was obvious a method to get the sum of all the digits in a number
+was necessary. I was able to write such a function using the modulo function and decreasing the 
+number by a factor of 10 each time. I actually had some difficulty writing such a function, probably more
+difficulty than it should have given me (given that it is quite a simple while loop). 
+
+Given this function it was a simple matter of brute forcing all the values between A and B and finding
+the one with the minimal difference.
+
+Review - 
+	Overall this week i have been more attentive to the problem description and have been
+spending more time on pen and paper working through possible solutions with the given test cases.
+This has made it easier to identify any solution that may be bad/impossible before spending too much time
+on it.
+
+

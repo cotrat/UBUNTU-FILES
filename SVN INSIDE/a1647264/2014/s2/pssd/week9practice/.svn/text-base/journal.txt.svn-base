@@ -1,0 +1,50 @@
+Mitchell Anderson - a1647264
+PSSD Week 9 Journal
+
+Review - 
+	This week I learned a lot about graph algorithms and solidified my knowledge of BFS and different
+representations that a graph can have. I learned that for different problems a different representation of a graph may be
+much more appropriate and make solving the problem much easier.
+
+SentenceDecomposition - 
+	This was the type of problem where I was able to see a solution on with pen and paper but struggled to convert
+it into working code. I knew what I wanted to do is for each string length, check the best way to get there then remember that
+value, a dynamic programming approach. I however struggled to implement this solution having to fiddle around a lot with indexes
+to be able to come up with a working solution. 
+
+This problem has shown me that my dynamic programming skills are still quite weak even though this seems to not be an incredibly difficult 
+problem (in regards to dynamic programming), so DP is definitely something I need to continue working on.
+
+CellDivide - 
+	CellDivide was an enjoyable problem and helped me solidify my knowledge of BFS. I was able to use BFS to find which nodes
+were actually accessible (after marking the deleted node as done as to not traverse that path) then figure out which
+of these nodes were leafs. As this problem required a quite simple implementation of BFS I was able to code the major part without any great issue,
+only making minor tweaks. 
+
+The larger issue I had with this problem came from not reading the specifications properly. Initially I was counting all nodes that BFS could
+visit as cells. I soon realized that we only wanted to count cells with no children, which could be done by simply iterating the nodes that can be reached
+against the parent input array. If no nodes have the node in question as the parent, increase the count.
+
+ErdosNumber - 
+	ErdosNumber was another BFS question, as I knew BFS can also be used to find the distance between two nodes. Once I was able to recognize this
+the problem became logically quite easy. The difficulty I had from ErdosNumber was the use of data structures. As the "nodes" are indexed by strings I used
+maps (a data structure which I am not particularly familiar with) to store my data. This was however a good learning experience as learning how to use different, standard,
+data structures is an important skill and can be very useful for solving further problems. 
+
+BlockEnemy - 
+	BlockEnemy was once again another problem I solved using BFS. Given that the problem definition specified that it would be a tree (only one
+path between towns) it was obvious that BFS would be suitable. Basically by running BFS to remember the path (DFS would also have worked) we can then
+traverse over this path and delete the cheapest edge. This problem seemed simple logically but I struggled implementing this algorithm.
+
+Initially i was using an adjacency list of my own data type (edges) to record the edges between towns. This led to an over-complication of the code which left
+me scratching ym head as to why I couldnt get the code to work. To solve this problem I decided to completely change my data structure. I simply used an adjaceny matrix
+with an assosciated cost matrix. This massively simplified the problem and after changing the data structure I was able to quickly finish off the problem.
+
+CastleGuards - 
+	I chose CastleGuards as a warm up problem. It is obvious that searching for the perfect spot would be time consuming and quite difficult, and I was able to recognize
+that it was actually completely unnecessary. Rather we can just search each rown and increase a count by 1 if the row does not contain a guard and do the same for the columns too.
+By doing this then taking the max of these two counts we are given the correct answer.
+
+I did not have much trouble solving this problem (as expected) because it was a two star problem and was simply used to get into the swing of things.
+
+

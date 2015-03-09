@@ -1,0 +1,83 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <string>
+#include <limits>
+#include <stdio.h>
+#include <sstream>
+using namespace std;
+
+
+class CorporationProfits
+{
+  public:
+	
+	vector<long long> salaries;
+	vector<string> g_relations;
+
+	long long totalSalary(vector<string> relations)
+	{
+		long long total = 0;
+		g_relations = relations;
+
+		for(int l = 0; l < relations.size(); l++)
+		{
+			salaries.push_back(-1);
+		}
+		
+		for(int i = 0; i < relations.size(); i++)
+		{
+			//if(salaries[i] == -1)
+			//{
+			//	cout << "Worker " << i << endl << endl;
+				total += recur(i);
+				//cout << total << endl;
+			//}
+		}
+		//total = recur(1);
+		return total;
+	}
+	
+	long long recur(int worker)
+	{
+		long long ans = 0;
+		//cout << " Called on worker " << worker << endl;
+		if(salaries[worker] != -1)			// If its already been done
+			return salaries[worker];
+		
+		bool hasSubs = 0;
+		for(int j = 0; j < g_relations[worker].size(); j++)
+		{
+			if(g_relations[worker][j] == 'Y')	// Check which recursive calls need to be made
+			{
+				ans+=recur(j);
+				hasSubs = 1;
+			}
+		}
+
+		salaries[worker] = ans;				// Memoize
+		if(!hasSubs) 
+		{
+			salaries[worker] = 1;
+			ans = 1;
+		}
+		return ans;
+	}
+	
+	
+	
+		       
+};
+ 
+/*int main()
+{
+      	CorporationProfits a;
+	int l;
+	string complearr[] =  			{"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN", "YNYNNYNNNNYYNNNNNNNNNNNNNNNNNNNNNNNNNNNN", "YNNNNYNNNNNYNNNNYNNNNNNNNNNNNNNNNNNNNYNN", "NNNNNYNNNYNYNYYYNYYNNNNYNNNNYNNNNNNNNNYN", "YYYYNYYYNNNNYYYYYYYYNNYYNYYYNNYYYYNYNYNN", "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN", "NYYNNNNNYYNYNYNNNYYNNNNYNNNNNNYNNNNNNYYY", "NNYNNNNNNYNNNNNNYNNNNNNNNYNNNNNNNNNNYYNN", "NYNNNNNNNNYYNYYNNYYNNNNNNYNNNNNYNNYYNYYN", "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN", "YNYNNYNYNYNNNNNNNNNNNNNNNYNNNNYNNNNYNYNN", "YNNNNNNNNNNNNNYNNNNNNNNNNNNNNNNNNNNNNNNN", "NYNNNNYYNNYNNYYNNNNYNNNNNYYNYYYYNNNNYNNY", "NYNNNYNNNYNYNNNNNYNNNNNNNYNNNNNYNNYNYNNY", "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN", "YYNNNNNYNYNYNYYNNNNNNNNYNYNNNNYYNNNYNNNY", "YNNNNNNNNYNNNNYNNNNNNNNNNNNNNNYNNNNNNYNN", "YNYNNYNNNYNNNNYNYNNNNNNNNNNNNNNNNNYYNNNN", "NNNNNNNNNYYYNNYNNNNNNNNNNYNNNNYNNNNYNNNN", "NNNNNNYYNYYYNYYNYNNNNNNYNNNNNNNYNNYYYNNN", "YNNYNNYYYNNNYYYYNNNNNNNNNYNYNNYYNYYNNNNN", "NNNYYYNNNNYNNYNYNYNYYNYNNNYNYNNNYNYYYNNN", "YYNYNNYYYYNYNYNYNNNYNNNNNYYNYNYYNNNYYYNN", "NNNNNNNNNYNNNYYNNNYNNNNNNYNNNNYYNNYYYNYN", "NNNYYNNNNYYYYNNNNYYNNNYYNNNYYYYNNYYYYYYN", "YNNNNNNNNNNYNNNNNNNNNNNNNNNNNNNNNNNNNYNN", "NNYNNNYNNYYYNNNNYNNNNNNYNNNNYNNNNNYYYNYN", "YNNYNYNNNNNNNNNNNNYYNNNNNYYNNNNYYNYYYNYN", "NNYNNNYYNYNNNYNNNYNNNNNNNYNNNNNNNNYYYNNN", "NNYNNNNYYYYYNNYYYNNNNNYNNYYYYNYNYYNNYYNY", "YNNNNNNNNYNYNNNNNNNNNNNNNNNNNNNNNNNNNNNN", "NNNNNYNYNNNNNNYNNYNNNNNNNYNNNNNNNNYNYYYY", "NYYNNNYYNNYNNNYYYYNYNNNNNNNNYNNNNNYYNNNN", "YYNNNNNNNYNYNYYNYNYYNNNYNYYYYNNNNNNYNYYN", "YNYNNYNNNNNNNNNNNNNNNNNNNYNNNNNNNNNNNYNN", "YNYNNYNNNYNNNNNNYNNNNNNNNNNNNNNNNNYNYNNN", "NNYNNYNNNYNNNNNNNNNNNNNNNNNNNNYNNNYNNNNN", "NNNNNNNNNYNNNNYNNNNNNNNNNNNNNNNNNNNNNNNN", "YYYNNNNYNYYYNNNNYNNNNNNNNYNNNNNNNNNYNNNN", "NNNNNYNNNNYNNNYNNNNNNNNNNNNNNNYNNNNNNYNN"};
+	vector<string> comple(complearr,complearr + sizeof(complearr) / sizeof(string) );
+	l = a.totalSalary(comple);
+	cout << l;
+
+	
+}*/

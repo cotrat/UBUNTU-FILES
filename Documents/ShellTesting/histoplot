@@ -1,0 +1,45 @@
+#!/bin/bash
+optind=1
+divnum=1
+char='#'
+
+if [ ! -r "$1" ]
+then
+    	echo "NOT A READABLE FILE! PLEASE ENSURE FIRST COMMAND IS AN APPROPRIATE FILE"
+	exit
+fi
+
+for x in $@;do		
+		if [[ $x == '-c' ]]; then
+			cc=1
+		fi
+		if [[ $x == '-r' ]]; then
+			char=${@:$((optind+1)):1}
+		fi
+		if [[ $x == '-s' ]]; then
+			divnum=${@:$((optind+1)):1}
+		fi
+		optind=$(($optind+1))
+	done
+
+
+while read line 
+do
+	first=$( echo $line | cut -d' ' -f1 )
+	second=$( echo $line | cut -d' ' -f2 )
+	for (( c=1; c<=$(( second/divnum )); c++ ))
+	do
+   		d=$d${char}
+	done
+
+	if [[ $cc == '1' ]]; then
+		printf "%3s%5s %s\n" $first $second $d
+		
+				
+	else
+		printf "%3s %s\n" $first $d
+	fi
+	
+	d=''
+done < "$1"
+

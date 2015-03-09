@@ -1,0 +1,44 @@
+#!/bin/bash
+
+optind=1
+divnum=1
+char='#'
+file="input"
+inp_str=''
+
+
+for x in $@;do		
+		if [[ $x == '-c' ]]; then
+			cc=1
+		fi
+		if [[ $x == '-p' ]]; then
+			char=${@:$((optind+1)):1}
+		fi
+		if [[ $x == '-s' ]]; then
+			divnum=${@:$((optind+1)):1}
+		fi
+		if [[ -a $x ]]; then
+			file=$x
+		fi
+		optind=$(($optind+1))
+done
+
+if [[ $cc == '1' ]];then
+	inp_str="$inp_str -c"
+fi
+if [[ $char != '#' ]];then
+	inp_str="$inp_str -p $char"
+fi
+if [[ $divnum != 1 ]];then
+	inp_str="$inp_str -s $divnum"
+fi
+
+
+if [[ "$file" == "input" ]];then
+	myvar=$(cat)
+	echo "$myvar" | ./wordify | ./stripchars | ./histo | ./histoplot $inp_str
+else
+	./wordify "$file" | ./stripchars | ./histo | ./histoplot $inp_str
+fi
+
+

@@ -1,0 +1,51 @@
+#!/bin/bash
+
+optind=1
+divnum=1
+char='#'
+exec 3<"$1"
+for x in $@;do		
+		if [[ $x == '-c' ]]; then
+			cc=1
+		fi
+		if [[ $x == '-p' ]]; then
+			char=${@:$((optind+1)):1}
+		fi
+		if [[ $x == '-s' ]]; then
+			divnum=${@:$((optind+1)):1}
+		fi
+		if [[ $x == '-r' ]]; then
+			rr=$(tr -d ${@:$((optind+1)):1} < $1)
+			exec 3< <(echo "$rr")
+		fi
+		optind=$(($optind+1))
+	done
+
+
+while read line 
+do
+	for x in $line
+	do
+		arr[${#x}]=$(( arr[${#x}] + 1 ))
+	done
+done <&3
+exec 3<&-
+
+for (( i=0 ; i <= ${#x}; i++ ))
+do
+	if [[ ${arr[$i]} > 0 ]]; then
+		for (( j=1 ; j <= $(( arr[$i]/divnum )); j++ ))
+		do
+			d=$d${char}
+		done
+	    		if [[ $cc == '1' ]]; then
+				printf "%3s%5s %s\n" $i  ${arr[$i]} $d
+			else
+				printf "%3s %s\n" $i $d
+			fi
+		d=''	
+	fi
+done
+
+
+

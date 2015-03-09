@@ -1,0 +1,16 @@
+#ifndef Die_H
+#define Die_H
+
+class Die {
+
+	public:
+		Dice(); // Argument-less constructor
+		void roll(); // roll the dice
+		int getFace() const; // get face value
+		~Dice(); // destructor
+		
+	private:
+		int m_face; // face value
+}
+
+#endif

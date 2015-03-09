@@ -1,0 +1,56 @@
+#ifndef DECK_H
+#define DECK_H
+
+#include "Card.h"
+#include <vector>
+
+/**
+ * Class that a deck of cards
+ *
+ * @author      Christopher Johnson
+ * @date        Thu  6 Sep 2012 16:39:58 CST
+ */
+class Deck {
+    public:
+        /**
+         *  Deck constructor - creates a Deck object containing one of each card
+         **/
+        Deck();
+
+        /**
+         * Shuffles the deck of cards using random_shuffle from C++ algorithm library
+         **/
+        void shuffle();
+
+        /**
+         * Sorts the deck using selection sort
+         **/
+        void sort();
+
+        /**
+         * Print the cards in the deck in order
+         **/
+        void print() const;
+
+    private:
+        static const int NUM_VALUES = 13;  // A, 2-10, J, Q, K
+        std::vector<Card> m_cards;
+
+        /**
+         * private helper methods to convert suit to human readable form
+         *
+         * @param the suit to be converted
+         * @return the human readable version of the suit
+         **/
+        std::string toString(Suit suit) const;
+
+        /**
+         * private helper methods to convert value to human readable form
+         *
+         * @param the value to be converted
+         * @return the human readable version of the value
+         **/
+        std::string toString(int value) const;
+};
+
+#endif

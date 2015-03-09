@@ -1,0 +1,148 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Bst    Main program                                                   ;
+;                                                                             ;
+;              Reads numbers from input, 2 per line.  Sorts the data, then    ;
+;              prints out the sorted data.                                    ;
+;                                                                             ;
+;       Entry   .start init                                                   ;
+;                                                                             ;
+;       Written YOUR NAME AND DATE HERE                                       ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+MAXLINES .equ	10			;Maximum number of lines to read
+
+	.export	main
+
+	.import	intToStr
+	.import	tInsert
+	.import	tPrint
+	.import	tRev
+	.import	readData
+	.import	strPut
+	.import heapGet
+	.import put
+
+	
+	.seg	Code
+	.align	2
+
+data	.equ	-4*(2*MAXLINES)
+strBuf	.equ	data-16
+framSiz	.equ	-strBuf
+
+main	addi	r30,r14,0		;Create stack frame
+	subui	r14,r14,framSiz
+
+	addui	r1,r0,msgUns		;Print heading
+	jal	strPut
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	nrItems:= ReadData(data,MAXLINES)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;	addi	r1,r30,data		;r1:= ->Data
+;	addi	r2,r0,MAXLINES		;r2:= nrLinesToRead
+;	jal	readData
+;	add	r3,r1,r0		;r3:= nrItems
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	tree= null;
+;       for( i=0; i<nrItems; i++ ){
+;            tree= insert(tree,data[i]);
+;       }
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;	clr	r4			;tree= null
+;	clr	r5			;i= 0 
+;	addi	r6,r30,data		;->data
+
+;iloop	slt	r7,r5,r3		;i<nrItems?
+;	bf	r7,display		;No
+;
+;	subui	r14,r14,8		;tree= tInsert(tree,data[i])
+;	sw	0(r14),r4		;push ->tree
+;	slli	r1,r5,2			;push data[i]
+;	add	r1,r1,r6
+;	lw	r1,(r1)
+;	sw	4(r14),r1
+;	jal	tInsert
+;	mov	r4,r1
+;	addui	r14,r14,8
+;
+;	addi	r5,r5,1			;i++
+;	j	iloop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	Print the tree 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.seg Constant
+
+
+mitchN	.word 4;
+	.word mitchL
+	.word mitchR
+
+mitchR	.word 9
+	.word 0
+	.word 0
+
+mitchL	.word 2
+	.word mitchLL
+	.word 0
+
+mitchLL .word 1
+	.word 0
+	.word 0
+
+	.seg Code
+
+;display	addui	r1,r0,msgSort		;Print heading
+;	jal	strPut
+
+	addui	r4,r0,mitchN
+	subui	r14,r14,4		;tPrint(tree)
+	sw	0(r14),r4		;push ->tree
+	jal	tPrint
+	addui	r1,r0,"K"
+	jal	put
+	halt
+;	addui	r14,r14,4
+
+	addui	r1,r0,crlf		;print cr/lf
+	jal	strPut
+	halt
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	Reverse the tree 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;	subui	r14,r14,4		;tRev(tree)
+;	sw	0(r14),r4		;push ->tree
+;	jal	tRev
+;	addui	r14,r14,4
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	Print the tree 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;	addui	r1,r0,msgRev		;Print heading
+;	jal	strPut
+;
+;	subui	r14,r14,4		;tPrint(tree)
+;	sw	0(r14),r4		;push ->tree
+;	jal	tPrint
+;	addui	r14,r14,4
+;
+;	addui	r1,r0,crlf		;print cr/lf
+;	jal	strPut
+;
+;	halt				;...and halt
+
+
+	.seg	Constant
+msgUns	.ascii	"Unsorted data...\r\n\0"
+msgSort	.ascii	"Sorted data...\r\n\0"
+msgRev	.ascii	"Reversed data...\r\n\0"
+crlf	.ascii	"\r\n\0"

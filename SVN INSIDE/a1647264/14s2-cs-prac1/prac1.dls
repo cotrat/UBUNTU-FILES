@@ -1,0 +1,190 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       Prac1   The transform program                                         ;
+;                                                                             ;
+;       Written Mitchell Anderson 19-08-14                                ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+lights		.equ	16#FFFFFFF8
+switches	.equ	16#FFFFFFFC
+
+
+		.start main
+
+
+main:
+		lw	r1,lo;
+		lw	r2,hi;
+		lw 	r3,switches		; load step from switches
+		jal 	padSum
+		sw	result,r1		;
+		sw 	lights,r1
+		halt	
+
+						; space for all old registers
+oldr1		.space 4			
+oldr2		.space 4
+oldr3		.space 4
+oldr4		.space 4
+oldr5		.space 4
+oldr6		.space 4
+oldr7		.space 4
+oldr8		.space 4
+oldr9		.space 4
+oldr10		.space 4
+oldr11		.space 4
+oldr12		.space 4
+oldr13		.space 4
+
+oldr31		.space 4
+oldr32		.space 4
+
+lo		.word 0
+hi		.word 10
+result		.space 4
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       pad     Compute a Padovan number                                      ;
+;                                                                             ;
+;       Entry   r1= n  n>=0                                                   ;
+;               jal pad                                                       ;
+;                                                                             ;
+;       Exit    r1= pad(n)                                                    ;
+;                                                                             ;
+;       Uses    r1                                                            ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+pad						; beginning of padovan function
+		sw	oldr2,r2
+		sw	oldr3,r3
+		sw	oldr4,r4
+		sw	oldr5,r5
+		sw	oldr6,r6
+		sw	oldr7,r7
+		sw	oldr8,r8
+
+
+		addi	r2,r0,3			; i = 3
+		addi	r6,r0,1			; pad(n-3) = 1
+		addi	r7,r0,1			; pad(n-2) = 1
+		addi	r8,r0,1			; pad(n-1) = 1
+	
+		slti	r4,r1,0			; n < 0 ?
+		bt	r4,end3x		;
+		sgti	r4,r1,2			; r1 (n) > 2 ?
+		bf	r4,end2x		; if not true, skip to end2
+	
+loopx:		sle	r5,r2,r1		; check if i <= n
+		bf	r5,endx			; if not true jump to end
+		add	r3,r6,r7		; pad(n) = pad(n-2) + pad(n-3)
+		mov	r6,r7			; pad(n-3) = pad(n-2)
+		mov	r7,r8			; pad(n-2) = pad(n-1)
+		mov	r8,r3			; pad(n-1) = pad(n)
+		addi 	r2,r2,1 		; i++
+		j loopx
+	
+endx: 		mov 	r1,r3			; store result in r1
+		j	resreg
+
+end2x:		addi	r1,r0,1			; if the input is less than 2, immediately return
+		j	resreg
+
+end3x:		addi	r1,r0,-1		; if the input is less than 0, return -1
+		j	resreg
+
+resreg:		
+		lw	r2,oldr2
+		lw	r3,oldr3
+		lw	r4,oldr4
+		lw	r5,oldr5
+		lw	r6,oldr6
+		lw	r7,oldr7
+		lw	r8,oldr8		
+		jr r31
+
+	
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       padSum  Compute sum of Padovan numbers                                ;
+;                                                                             ;
+;       Entry   r1= lo                                                        ;
+;               r2= hi                                                        ;
+;               r3= step                                                      ;
+;               jal padSum                                                    ;
+;                                                                             ;
+;       Exit    r1= Sum of Padovan numbers from lo to hi (inclusive),         ;
+;                   advancing by step.                                        ;
+;                   step                                                      ;
+;                                                                             ;
+;       Uses    r1, r2                                                        ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+padSum						; beginning of padovan function
+
+		sw	oldr3,r3
+		sw	oldr4,r4
+		sw	oldr5,r5
+		sw	oldr6,r6
+		sw	oldr7,r7
+		sw	oldr8,r8
+		sw	oldr31,r31		; store old r31
+	
+		addi	r4,r0,0
+		addi	r6,r0,0
+		
+		add	r5,r0,r1		; stepctr = lo 
+		mov	r6,r1			; i = lo
+		addi	r7,r0,0			; total sum
+
+		slti	r4,r3,1			; step < 1 ?
+		bt	r4,bad			; not possible
+
+		sgt	r4,r1,r2		; lo > hi
+		bt	r4,bad			; not possible
+
+		slti	r4,r1,0			; lo < 0 ?
+		bt	r4,bad
+
+loop:		sle	r4,r6,r2		; check if i <= hi
+		bf	r4,good
+	
+		sw	oldr1,r1		; store old r1
+		seq	r4,r6,r5		; if i == stepctr
+		bf	r4,inci			; 
+		mov	r1,r6			; call(pad(i))
+		jal	pad			;
+		add	r7,r7,r1		; total = total + result(pad(n)) - which is stored in r1
+
+		lw	r1,oldr1		;
+		add	r5,r5,r3		; stepctr = stepctr + step
+
+inci:		addi	r6,r6,1			; i++
+		j	loop			; go back to loop
+		
+
+
+good:		mov	r1,r7			; r1 = total
+		j	resreg2			;
+		
+			
+bad:
+		addi	r1,r0,-1		; just letting us see that an exit condition was met
+		j	resreg2			; a bad input has been deteced
+
+resreg2:	
+
+		lw	r3,oldr3
+		lw	r4,oldr4
+		lw	r5,oldr5
+		lw	r6,oldr6
+		lw	r7,oldr7
+		lw	r8,oldr8
+		lw	r31,oldr31		;
+		jr	r31

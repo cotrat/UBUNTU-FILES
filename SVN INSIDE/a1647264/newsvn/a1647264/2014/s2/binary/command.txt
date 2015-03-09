@@ -1,0 +1,12 @@
+mitchell@ubuntu:~/DSM/binary$ java -jar dasm.jar -r tree.dls 
+
+
+      A D V E R T I S E M E N T
+You can get listing of your assembled 
+program by inluding the -l option
+
+
+mitchell@ubuntu:~/DSM/binary$ java -jar dlnk.jar -o binaryprog divide.dlo heap.dlo io.dlo main.dlo readdata.dlo strings.dlo tree.dlo init.dlo
+mitchell@ubuntu:~/DSM/binary$ java -jar dloc.jar binaryprog -l binary.dla
+mitchell@ubuntu:~/DSM/binary$ java -jar dsim.jar
+

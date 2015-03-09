@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "assert.h"
+#include "buffer.h"
+#include <string.h>
+
+void* producer(void* param);
+void* consumer(void* param);
+
+#define LINEMAX 100
+
+int main(int argc, char** argv)
+{
+    buffer buf;
+    bufInit(&buf);
+
+    pthread_t prodThread;
+    int pok= pthread_create(&prodThread,NULL,&producer,(void*)&buf);
+    assert(pok==0,"Can't create producer");
+
+    pthread_t consThread;
+    int cok= pthread_create(&consThread,NULL,&consumer,(void*)&buf);
+    assert(cok==0,"Can't create consumer");
+      
+    void* ans;
+    int jok= pthread_join(prodThread,&ans);
+    assert(jok==0,"Can't join prodThread");
+
+jok= pthread_join(consThread,&ans);
+    assert(jok==0,"Can't join prodThread");
+
+    return 0;
+}
+
+
+void* producer(void* param)
+{
+    buffer* b= (buffer*)param;
+  
+    printf("P: Starting\n");
+    FILE* fd= fopen("in.txt","r");
+    assert(fd!=NULL,"P: Can't open file");
+    
+    for(;;){
+        char* line= (char*)malloc(LINEMAX);
+	fgets(line,LINEMAX,fd);
+	
+    if( feof(fd) )break;
+        line[strlen(line)-1]='\0';
+        printf("P: |%s|\n",line); 
+	bufPut(b,line);
+    }
+    bufPut(b,NULL);
+    fclose(fd);
+    
+    printf("P: Ending\n");
+    return NULL;
+}
+
+
+void* consumer(void* param)
+{
+    buffer* b= (buffer*)param;
+
+    printf("C: Starting\n");
+    for(;;){
+        char* line= bufGet(b);
+	
+      
+    if( line==NULL )break;
+	printf("C: |%s|\n",line); 
+    }
+    
+    printf("C: Ending\n");
+    return NULL;
+}

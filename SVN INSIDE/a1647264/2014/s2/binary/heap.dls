@@ -1,0 +1,89 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       heap    Dynamic storage manager to allocate heap space                ;
+;                                                                             ;
+;       Written D Knight 16jul11                                              ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+	.seg	Heap
+	.align	2
+hpFree	.word	hp		;Pointer to start of free space
+hp	.space 1020		;the Heap
+hpEnd	.equ   $
+
+
+	.seg   Constant
+heapF	.word	hpFree		;Address of heapFree
+heapE	.word	hpEnd		;Address of heapEnd
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       heapGet Allocate space from the heap                                  ;
+;                                                                             ;
+;               Halts the program if there is insufficient space in the heap  ;
+;                                                                             ;
+;       Entry   r1= Number of bytes needed                                    ;
+;               jal heapGet                                                   ;
+;                                                                             ;
+;       Result  r1= ->newNode                                                 ;
+;                                                                             ;
+;       Uses    r1                                                            ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	.seg	Code
+					
+N	.equ	0
+saveR2	.equ	-8
+saveR3	.equ	-12
+saveR4	.equ	-16
+framSiz	.equ	16
+
+	.seg	Code
+	.export	heapGet
+	.import	strPut
+					
+heapGet	sw	-4(r14),r30	        ;Create stack frame
+	mov	r30,r14
+	subi	r14,r14,framSiz
+
+	sw	saveR2(r30),r2		;Save registers
+	sw	saveR3(r30),r3
+	sw	saveR4(r30),r4
+
+;	Allocate new node
+
+	mov	r3,r1			;Save size
+	lw	r2,heapF		;r2= ->->free space
+	lw	r1,(r2)			;r1= ->newNode
+	add	r3,r3,r1		;Update free address
+	lw	r4,heapE		;r2= ->heapEnd
+	sgtu	r4,r3,r4		;->newNode outside heap?
+	bf	r4,heapGet1
+
+;	Disaster: Heap full
+
+	addui	r1,r0,fullMsg		;Complain...
+	jal	strPut
+	halt				;...and DIE
+
+;	Update heap pointer
+
+heapGet1 sw	(r2),r3			;Update free pointer
+
+	lw	r2,saveR2(r30)		;Restore registers
+	lw	r3,saveR3(r30)
+	lw	r4,saveR4(r30)
+
+	mov	r14,r30			;Destroy stack framex
+	lw	r30,-4(r14)
+	jr	r31
+
+	.seg	Constant
+fullMsg	.ascii	"Heap full\r\n\0"

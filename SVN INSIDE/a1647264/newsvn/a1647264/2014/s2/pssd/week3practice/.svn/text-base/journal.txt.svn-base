@@ -1,0 +1,40 @@
+PSSD Week 3 Journal - Mitchell Anderson a1647264
+
+Arrows - 
+	
+	After reading the problem description for 'Arrows' I was immediately able to see how I could solve this problem. 
+Being a 1 star problem I attempted to finish it quickly, as to help increase my programming speed. The basic algorithm 
+boiled down to iterating through the string until finding an arrowhead then using a nested for loop to check how long this arrow is. 
+I was able to complete arrows in around 30 mins, this is longer than I would have liked and was due to some simple oversights on my behalf.
+
+SimpleCompressor - 
+
+	I decided to complete this problem because I knew it would challenge my recursive skills (something I would still consider weak). 
+I knew from the outset how i would tackle this problem, but the implementation gave me some grief. The basic logic was find the first pair of brackets then keep expanding them 
+until no brackets are found then multiply by the first number inside the brackets, then place this expanded part inside the string. This process worked but I omitted to consider 
+the case when there are two distinc sets of brackets i.e. [3AB]HHHHHH[3[5AB]]. The solution to this was to write my own simple bracket matching algorithm to make sure I operate 
+on [3AB] first.
+
+FewestFactors - 
+
+	To complete FewestFactors I took advantage of C++ inbuilt "next permutation" function found in the aglorithm 
+library. Basically take the array of inouts, turn them into a single number and then find all the permutations of this 
+number, for each permuation find the factors. One problem I had was finding the actual number of factors, my method was 
+an extremely naive and crude implementation where I just attempted to divide by n, n-1, .... 1 and add one to a count every
+ time there was no remainder (using modulo)
+
+FracCount - 
+
+	This was another semi-simple problem, begin by starting at the given fraction, reduce the numerator until it is 1, 
+then reduce the denominator by 1, for each instance check if it is divisble. Once again my method for checking if it is divisble 
+(reducible) was quite naive, just check for every number below the numerator and if any of them are modulo remained 0 then it can be reduced.
+
+StrangeComputer - 
+	
+	This was another quite straightforward problem, so I challenged myself to finish it as quickly as possible, managing 
+to finish it in 10 minutes. Basically just find the location of the first 1 then set everything to 1's then find the next 
+time a 0 is needed and set to all 0's and repeat. This was another type of problem where I was able to come up with an 
+algorithm quickly, which worked first time
+
+
+

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ctr=0
+newStr=''
+
+
+
+if [[ "$#" == 0 ]];then
+	words="$(cat $@)"
+	echo "$words" | awk '{print length}' $1 | sort -n | uniq -c | sed -e 's/^ *//' | awk '{ print $2" "$1 }'
+
+else
+	awk '{print length}' $1 | sort -n | uniq -c | sed -e 's/^ *//' | awk '{ for (i=NF; i>1; i--) printf("%s ",$i); printf("%s\n",$1); }'
+fi
+
+
+

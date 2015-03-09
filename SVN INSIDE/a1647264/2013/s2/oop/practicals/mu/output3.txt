@@ -1,0 +1,5 @@
+Enter the size of you array  Enter the char value M U or I    
+Enter the char value M U or I    
+That was a valid MU String :)
+Rule 1 and 2 can be applied!
+MIU

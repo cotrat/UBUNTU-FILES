@@ -1,0 +1,36 @@
+#!/bin/bash
+
+count=0
+counter=1
+filename="pipe_test.txt"
+filename2="pipe_test2.txt"
+echo $#
+if [ $# -lt 2 ]; then
+	echo " Incorrect usage, please enter TWO PARAMETERS"
+else
+	for x in "$@";do
+		if [ $count == 0 ]; then
+			echo "put into file"
+			eval "$x" > "$filename"
+			count=1
+		elif [ $counter == $# ]; then
+			echo "last operation"
+			eval "$x" < "$filename"
+			count=0
+		else
+			echo "operate on then put into file"
+			eval "$x" < "$filename" > "$filename2"
+			if [ "$filename" == "pipe_test.txt" ]; then
+				filename="pipe_test2.txt"
+				filename2="pipe_test.txt"
+			else
+				filename2="pipe_test2.txt"
+				filename="pipe_test.txt"
+			fi
+		fi
+		counter=$(( $counter + 1 ))
+	done
+	
+fi
+
+

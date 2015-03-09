@@ -1,0 +1,85 @@
+#include "Die.h"
+#include <iostream>
+#include <cstdlib>
+#include <string>
+using namespace std;
+int main()
+{
+	srand(time(NULL));
+	int p1 = 0;
+	int p2 = 0;
+	int temp = 0;
+	int turn = 1;
+	bool check;
+	Die dice(3);
+	Die* dice2 = dice;
+	while(turn == 1)
+	{
+		
+		if(dice.getFace()==1)
+		{
+			turn = 2;
+			p1 = p1 + 0;
+			cout << "It rolled a 1, your turn is over and your score is " << p1 << endl;
+		}
+		else
+		{
+			temp = temp + dice.getFace();
+			cout << "The Dice was a " << dice.getFace() << "Do you want to roll again if so type 1, if not type 0"<< endl;
+			cin >> check;
+		}
+
+
+		if(check!=1)
+		{
+			p1 = p1 + temp;
+			if(p1 >= 10)
+			{
+				cout << "PLAYER 1 WINS!!!!";
+				return 0;
+			}
+			turn = 2;
+		}
+		else
+		{
+			dice.roll();
+		}
+	}		
+			
+	temp = 0;
+
+	while(turn == 2)
+	{
+		
+		if(dice.getFace()==1)
+		{
+			turn = 1;
+			p2 = p2 + 0;
+			cout << "It rolled a 1, your turn is over and your score is " << p1 << endl;
+		}
+		else
+		{
+			temp = temp + dice.getFace();
+			cout << "The Dice was a " << dice.getFace() << "Do you want to roll again if so type 1, if not type 0"<< endl;
+			cin >> check;
+		}
+
+
+		if(check!=1)
+		{
+			p2 = p2 + temp;
+			if(p2 >= 100)
+			{
+				cout << "PLAYER 2 WINS!!!!";
+				return 0;
+			}
+			turn = 1;
+		}
+		else
+		{
+			dice.roll();
+		}
+	}
+
+	temp = 0;
+}

@@ -1,0 +1,33 @@
+#include "Stratego.h"
+#include<string>
+#include<iostream>
+using namespace std;
+
+string toString(ConflictResolution resolution)
+{
+
+switch (resolution)
+	{
+	case ATTACKER_WINS:
+		cout << " The attacking force has won the conflict! "<< endl;
+	case DEFENDER_WINS:
+		cout << " The defending force has won the conflict! "<< endl;
+	case ATTACKER_AND_DEFENDER_LOSE:
+		cout << " The conflict has resulted in a draw! "<< endl;
+	case ATTACKER_WINS_GAME:
+		cout << " The attacking force has captured the flag and won the game! "<< endl;
+	case INVALID_CONFLICT:
+		cout << "That is an invalid move, what were you trying to do? " << endl;
+	}
+}
+
+
+int main(int argc, const char *argv[]) {
+    
+    // Write you tests here!
+
+    printTestingResults();
+
+    return 0;
+}
+

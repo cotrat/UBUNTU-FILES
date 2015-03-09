@@ -1,0 +1,144 @@
+#include "ArrayDeck.h"
+
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+
+using namespace std;
+
+Deck::Deck(const Deck& objectToCopy)
+{
+	m_cards = static_cast<Card *> (::operator new ((sizeof(Card)) * DECK_SIZE));
+	Card* copy_cards = objectToCopy.getCards();
+	int x = 0;
+	for(x=0;x<52;x++)
+	{
+		m_cards[x] = copy_cards[x];
+	}
+	delete copy_cards;
+}
+
+Card * Deck::getCards() const
+{
+	return(m_cards);
+}
+
+Deck::Deck() {
+    
+    // storing the size of the deck is likely to make the code clearer
+    // when working with arrays.
+    
+    // allocate heap space for the cards
+    // tricky - we have no way of constructing a Card object without arguments
+    // so we can't just do:
+    // m_cards = new Card[DECK_SIZE];
+    
+    // choices:
+    // 1) modify Card class to have a default constructor with no arguments.
+    // Card may not be our class, other programs may be reliant on current Card class
+    //
+    // 2) store an array of pointers instead of an array of objects
+    // requires additional heap allocations (more memory used)
+    //
+    // 3) use the operator new to allocate sufficient space on the heap
+    // m_cards = static_cast<Card *> (::operator new (sizeof Card * DECK_SIZE));
+    // requires use of C++ that is outside the scope of this course.
+    
+    // we'll use 3.  Although the allocation of memory in this way is outside
+    // the scope of this course, it illustrates what happens when arrays
+    // are dynamically created within the constructor.
+    // Note that m_cards is defined in ArrayDeck.h to be a
+    // pointer to a Card.  So this heap space is where we will store our
+    // array of cards.
+    // the operator new returns a void * so we must tell the compiler that the returned
+    // pointer will point to a Card by using a static_cast.
+    m_cards = static_cast<Card *> (::operator new ((sizeof(Card)) * DECK_SIZE));
+    
+    // populate the deck with one of each card
+    int deckIndex = 0;
+    
+    for(int suit = HEART; suit <= CLUB; suit++) {
+        for(int face = 1; face <= NUM_VALUES; face++) {
+            // Card constructor is Card (Suit, int)
+            m_cards[deckIndex] = Card(static_cast<Suit>(suit), face);
+            deckIndex++;
+        }
+    }
+}
+
+void Deck::shuffle() {
+    // the address of the first and last elements in an array
+    // are RandomAccessIterator as required by the random_shuffle
+    // function in the <algorithm> library
+    random_shuffle(&(m_cards[0]), &(m_cards[DECK_SIZE-1]));
+}
+
+void Deck::sort() {
+    
+    Card * sortedDeck = static_cast<Card *> (::operator new ((sizeof(Card)) * DECK_SIZE));
+    int sortedCount = 0;
+    
+    // select each card in turn
+    for(int i = 0; i < DECK_SIZE; i++) {
+        // find place in sorted deck
+        int index = 0;
+        while(index < sortedCount && sortedDeck[index] < m_cards[i]) {
+            index++;
+        }
+        
+        // insert into sorted deck at that place. have to shift all the higher
+        // values over
+        for (int moveIndex = sortedCount; moveIndex != index; moveIndex--)
+            sortedDeck[moveIndex] = sortedDeck[moveIndex-1];
+        sortedDeck[index] = m_cards[i];
+        sortedCount++;
+    }
+    // delete the old deck of cards, note that we have made copies of all of the cards
+    // so we'll have to delete all of the old cards.
+    delete m_cards;
+    m_cards = sortedDeck;
+}
+
+void Deck::print() const {
+    for(int i = 0; i < DECK_SIZE; i++) {
+        cout << toString(m_cards[i].getSuit());
+        cout << toString(m_cards[i].getValue()) << endl;
+    }
+}
+
+string Deck::toString(Suit suit) const {
+    switch(suit) {
+        case HEART:
+            return "Heart";
+        case SPADE:
+            return "Spade";
+        case DIAMOND:
+            return "Diamond";
+        case CLUB:
+            return "Club";
+    }
+    
+    return "invalid card suit";
+}
+
+string Deck::toString(int value) const {
+    if(value < 11) {
+        stringstream myStream;
+        myStream << value;
+        return myStream.str();
+    }
+    
+    switch(value) {
+        case 11:
+            return "J";
+        case 12:
+            return "Q";
+        case 13:
+            return "K";
+        case 14:
+            return "A";
+    }
+    
+    return "invalid card value";
+}

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#This works as intended
+remove=",.?!:;(){}[]\"\'"
+optind=1
+file="input"
+	for x in $@;do
+		if [[ -a $x ]]; then
+			file=$x;
+		fi
+		
+		if [[ $x == '-r' ]]; then
+			remove="${@:$((optind+1)):1}"
+		fi
+		optind=$(($optind+1))
+	done
+
+	if [[ "$file" == "input" ]];then
+		while IFS= read line
+		do
+			echo "$line" | tr -d "$remove" 
+    	
+		done
+	else
+		 tr -d "$remove" < "$file"
+
+	fi
+
+
+
+
+
+

@@ -1,0 +1,144 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                            ;
+;       Tree    Binary tree routines                                         ;
+;                                                                            ;
+;       written <yourname> and <date>                                        ;
+;                                                                            ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	.import put
+	.import heapGet
+	.import intToStr
+	.import strPut
+
+
+;	Offsets to fields of the node
+bstValue .equ	0		;Node value
+bstLeft	 .equ	4		;->leftChild
+bstRight .equ	8		;->rightChild
+bstSize	.equ	12
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                             ;
+;       tNode   Create a new tree node                                        ;
+;                                                                             ;
+;               Initialises the node with the given node value, and sets      ;
+;               pointers to subtrees to NULL                                  ;
+;                                                                             ;
+;       Entry   0(sp)=Number                                                  ;
+;               jal tNode                                                     ;
+;                                                                             ;
+;       Result  r1= ->newNode                                                 ;
+;                                                                             ;
+;       Uses    r1,r2                                                         ;
+;                                                                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                            ;
+;       tInsert Insert a node into a binary tree                             ;
+;                                                                            ;
+;       Entry   0(r14)= ->Root of the binary tree                            ;
+;               4(r14)= Number to be inserted into the tree                  ; 
+;               jal insert                                                   ;
+;                                                                            ;
+;       Exit    r1= ->Pointer to the (new) root of the binary tree           ;
+;                                                                            ;
+;       Uses    r1,r2                                                        ;
+;                                                                            ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                            ;
+;       tPrint  Print the structure of a binary tree                         ;
+;                                                                            ;
+;       Entry   0(r14)= ->rootNode of a tree                                 ;
+;               jal tPrint                                                   ;
+;                                                                            ;
+;       Uses    r1,r2                                                        ;
+;                                                                            ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.export tPrint
+
+	;addui	r5,r0,mitchN
+	;addui	r5,r5,4
+	;lw	r1,(r5)
+	;lw	r1,(r1)
+	.seg Code
+
+currNode	.equ -8
+tPrintR2	.equ -12
+tPrintR31	.equ -16
+tPrintSS	.equ -24			; Space for the new string
+
+tPrintSz	.equ 24
+
+tPrint	sw	-4(r14),r30			; Create the stack frame (we need to store r31 at least)
+	addu	r30,r14,r0
+	subui	r14,r14,tPrintSz
+	sw	tPrintR2(r30),r2
+	sw	tPrintR31(r30),r31
+	
+	addui	r1,r0,"("			; Print left brace
+	jal	put
+
+	lw	r1,0(r30)			; Get the node
+	sw	currNode(r30),r1		; store the current node in the stack frame
+
+	addui	r1,r1,bstLeft			; 
+	lw	r2,(r1)				; r2->root.left
+	beqz	r2,printMid			; if NULL skip
+	subui	r14,r14,4			; Push onto stack
+	sw	0(r14),r2			; 0(r14) -> Root.left
+	jal	tPrint				; tPrint(root.left)
+
+printMid
+	lw	r1,currNode(r30)		; Get the root node
+	lw	r1,(r1)				; Get actual value of r1
+	
+
+
+	add	r2,r0,r30			; Get freemem for intToStr
+	addi	r2,r2,tPrintSS
+
+	jal	intToStr
+
+	add	r1,r0,r30			; Go back to start of stringMem block
+	addi	r1,r1,tPrintSS
+
+	jal	strPut
+
+	lw	r1,currNode(r30)		; r1->root
+	addui	r1,r1,bstRight			; r1->root.right
+	lw	r2,(r1)				; 
+	beqz	r2,prDone			; if NULL skip
+	subui	r14,r14,4			; Push onto stack
+	sw	0(r14),r2			; 0(r14) -> Root.left
+	jal	tPrint				; tPrint(root.left)
+	
+prDone	addui	r1,r0,")"			; Print right brace
+	jal	put
+
+	lw	r2,tPrintR2(r30)
+	lw	r31,tPrintR31(r30)
+	addu	r14,r30,r0			; Destroy the stack frame
+	lw	r30,-4(r14)
+	jr	r31
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                            ;
+;       tRev    Reverse the order of nodes in a tree                         ;
+;                                                                            ;
+;       Entry   0(r14)= ->rootNode of a tree                                 ;
+;               jal tRev                                                     ;
+;                                                                            ;
+;       Uses    r1,r2                                                        ;
+;                                                                            ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
