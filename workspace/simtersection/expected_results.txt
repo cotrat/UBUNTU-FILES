@@ -1,0 +1,7 @@
+TEST 1 - A stopping area was created at the taxiRank
+TEST 2 - The Occupancy value of taxi was set 
+TEST 3 - A Pedestrian stopped at the taxi rank 
+TEST 4 - Creating a Pedestrian to exit a taxi once the taxi has parked
+TEST 5 - The Created Pedestrian is walking into lane at an angle of 240 (Northwest)
+TEST 6 - The Taxi picked up a off a pedestrian 
+TEST 7 - The Pedestrian now walks to the left once walking 'up' the lane 

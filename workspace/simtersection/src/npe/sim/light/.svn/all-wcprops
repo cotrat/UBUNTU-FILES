@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/light
+END
+State.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/light/State.java
+END
+PedestrianLight.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/light/PedestrianLight.java
+END
+TrafficLight.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/light/TrafficLight.java
+END
+Sequence.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/light/Sequence.java
+END
+TrafficLightController.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/light/TrafficLightController.java
+END

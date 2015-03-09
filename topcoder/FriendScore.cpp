@@ -1,0 +1,86 @@
+#include <vector>
+#include <iostream>
+#include <queue>
+using namespace std;
+
+// Started 7 30
+class FriendScore
+{
+	public:
+	int highestScore(vector<string> friends)
+	{
+		int adj[50][50];
+		for(int i = 0; i < friends.size(); i++)
+		{
+			for(int j = 0; j < friends[0].size(); j++)
+			{
+				if(friends[i][j] == 'Y')
+				{
+					adj[i][j] = 1;
+					adj[j][i] = 1;
+				}
+				else
+				{
+					adj[i][j] = 0;
+				}
+			}
+		}
+		int max = 0;
+		for(int y = 0; y < friends.size(); y++)
+		{
+			queue<int> bfs;
+			int done[50];
+			int dist[50];
+			for(int k = 0; k < friends.size(); k++)
+			{
+				done[k] = 0;
+				dist[k] = 0;
+			}
+			bfs.push(y);
+			done[y] = 1;
+			while(!bfs.empty())
+			{
+				int t = bfs.front();
+				bfs.pop();
+				for(int l = 0; l < friends.size(); l++)
+				{
+					if(adj[t][l] == 1 && done[l] == 0)
+					{
+						done[l] = 1;
+						dist[l] = dist[t] + 1;
+						bfs.push(l);
+					}
+				}	
+			}
+			int count = 0;
+			for(int x = 0; x < friends.size(); x++)
+			{
+				if(dist[x] == 1 or dist[x] == 2) count++;
+			}
+			if(count>max)
+			{
+				max = count;
+			}
+		}
+		return max;
+	}
+};
+
+int main()
+{
+	FriendScore a;
+	string l;
+	string complearr[] = {"NNNNYNNNNN",
+ "NNNNYNYYNN",
+ "NNNYYYNNNN",
+ "NNYNNNNNNN",
+ "YYYNNNNNNY",
+ "NNYNNNNNYN",
+ "NYNNNNNYNN",
+ "NYNNNNYNNN",
+ "NNNNNYNNNN",
+ "NNNNYNNNNN"};
+	vector<string> comple(complearr,complearr + sizeof(complearr) / sizeof(string) );
+	int v = a.highestScore(comple);
+	cout << v;
+}

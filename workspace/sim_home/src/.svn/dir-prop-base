@@ -1,0 +1,15 @@
+K 14
+bugtraq:number
+V 4
+true
+K 13
+svn:mergeinfo
+V 206
+/branches/event/src:163-187
+/branches/gui/src:620-655
+/branches/lane/src:209-427
+/branches/laneChange/src:480-611
+/branches/results/src:482-660
+/branches/taxis/src:620-657
+/branches/trafficLight/src:613-654
+END

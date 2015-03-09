@@ -1,0 +1,18 @@
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+class FriendScore
+{
+	public:
+	int highestScore(vector<string> friends)
+	{
+
+	}
+};
+
+int main()
+{
+	cout << "hello";
+}

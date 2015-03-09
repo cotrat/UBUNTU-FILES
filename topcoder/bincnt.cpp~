@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <string>
+#include <limits>
+#include <stdio.h>
+#include <sstream>
+#include <bitset>
+using namespace std;
+
+
+class SafeRemoval
+{
+  public:
+	
+
+	int removeThem()
+	{
+			/*for (int s = 0; s < (1 << 3); ++s)    // iterate through all non-null sets
+   			{
+
+				for (int e = 0; e < 3; ++e)       // for each set element
+				{
+		    			if (s & (1 << e))                     // test for membership of set
+		    			{
+		        			cout << "1";
+		    			}
+					else
+					{
+						cout << "0";
+					}
+					
+	       			}
+				cout << endl;
+    			}*/
+
+			std::bitset<16> foo;
+			for(int i  = 0 ; i < 9; i++)
+			{
+				cout << foo(i) << endl;
+			}
+	}
+	
+
+	
+	
+	
+		       
+};
+ 
+int main()
+{
+      	SafeRemoval a;
+	a.removeThem();
+
+
+	
+}

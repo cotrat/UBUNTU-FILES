@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road
+END
+Lane.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road/Lane.java
+END
+VehicleLane.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road/VehicleLane.java
+END
+TaxiRank.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road/TaxiRank.java
+END
+InvalidLaneException.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road/InvalidLaneException.java
+END
+Road.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road/Road.java
+END
+Intersection.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road/Intersection.java
+END
+Box.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road/Box.java
+END
+PedestrianLane.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SEGP1A-2012S1-G4/!svn/ver/665/branches/rc1/src/npe/sim/road/PedestrianLane.java
+END

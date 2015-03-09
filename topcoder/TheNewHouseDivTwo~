@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <cmath>
+#include <string>
+#include <utility>
+#include <limits>
+#include <stdio.h>
+#include <sstream>
+#include <bitset>
+using namespace std;
+
+
+class TheNewHouseDivTwo // Completed and Working 
+{
+  public:
+	int count(vector<int> x, vector<int> y)
+	{
+		vector<pair
+		for(int z = 0; z < x.size(); z++)
+		{
+
+		}
+		for(int i = -99; i < 100; i ++)
+		{
+			for(int j = -99; j < 100; j++)
+			{
+			
+			}
+		}
+		return beach;
+
+	}
+
+	
+
+	
+	
+	
+		       
+};
+ 
+int main()
+{
+      	Islands a;
+	
+	string arr[] = {"#...#.....",
+ "##..#...#."};
+	vector<string> mon(arr,arr + sizeof(arr) / sizeof(string) );
+
+
+	int l = a.beachLength(mon);
+	cout << l;
+
+	
+}

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+java -jar simtersection_a1647264.jar -testmode | sort -n > test1_results.txt
+java -jar simtersection_a1647264.jar -testmode2 | sort -n > test2_results.txt
+
+
+diff -s test1_results.txt expected_results.txt
+diff -s test2_results.txt expected_results.txt

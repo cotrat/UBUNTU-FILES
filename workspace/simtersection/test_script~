@@ -1,0 +1,8 @@
+#!/bin/bash
+
+java -jar test.jar -testmode | sort -n > test1_results.txt
+java -jar test.jar -testmode2 | sort -n > test2_results.txt
+
+
+diff -s test1_results.txt expected_results.txt
+diff -s test2_results.txt expected_results.txt

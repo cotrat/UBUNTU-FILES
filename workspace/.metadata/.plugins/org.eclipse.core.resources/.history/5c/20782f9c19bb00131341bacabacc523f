@@ -1,0 +1,67 @@
+import java.io.PrintWriter;
+ 
+import javax.swing.JPanel;
+ 
+import npe.sim.*;
+import npe.sim.entity.Pedestrian;
+import npe.sim.event.AddCarEvent;
+import npe.sim.event.AddPedestrianEvent;
+import npe.sim.event.Event;
+import npe.sim.results.StatsCollector;
+import npe.sim.road.*;
+import junit.framework.TestCase;
+ 
+public class NewTests extends TestCase {
+/*
+        System.out.println("Changes constructor of AddCarEvent. The change removed a condition which set the possibility of creating a taxi to 0 in some lanes. Test: call constructor, on that type of lane until a taxi is produced. Any production of a taxi will prove this change successful, as none of the other probabilities have been eddited. After compiling and running Simtersection, it can be seen that taxi's are being created in lanes that lead to the second rank. Therefore this change is successful");
+       
+        System.out.println("list of functions eddited whilst adding a second taxi rank and additional taxi rank functionality:");
+        System.out.println("AddCarEvent.AddCarEvent");
+        System.out.println("TaxiRank.TaxiRank");
+        System.out.println("TaxiRank.Tick");
+        System.out.println("AddPedestrianEvent.AddPedestrianEvent");
+        System.out.println("AddPedestrianEvent.createEntity\n");
+        */
+ 
+        //printer
+        public static PrintWriter out;
+       
+        public static void test1(){
+                //prints
+       
+                print("TEST 1: see if taxi's can be created in all lane types");
+               
+                //variables used in creating the dummys for test1
+                StatsCollector sc = new StatsCollector();
+                SimProperties sp = new SimProperties();
+                Road myroad = new Road(Road.Type.FROME);
+                Lane east = new VehicleLane(VehicleLane.Type.LEFT_STRAIGHT,myroad,0,0,90, sc);
+               
+                Lane south = new VehicleLane(VehicleLane.Type.LEFT_STRAIGHT,myroad,0,0,180, sc);
+                Lane west = new VehicleLane(VehicleLane.Type.LEFT_STRAIGHT,myroad,0,0,240, sc);
+                Lane north = new VehicleLane(VehicleLane.Type.LEFT_STRAIGHT,myroad,0,0,0, sc);
+ 
+ 
+                AddCarEvent E =  new AddCarEvent(0, east,0);
+                print("\ttesting if a taxi can be created in a lane heading east");
+                assertEquals("A taxi can be created in a lane heading east",.2,E.TAXI_PROB);
+                print("\tsuccess");
+               
+                print("\ttesting if a taxi can be created in a lane heading south");
+                E =  new AddCarEvent(0, south,0);
+                assertEquals("A taxi can be created in a lane heading east",.2,E.TAXI_PROB);
+                print("\tsuccess");
+               
+                print("\ttesting if a taxi can be created in a lane heading west");
+                E =  new AddCarEvent(0, west,0);
+                assertEquals("A taxi can be created in a lane heading east",.2,E.TAXI_PROB);
+                print("\tsuccess");
+               
+                print("\ttesting if a taxi can be created in a lane heading north");
+                E =  new AddCarEvent(0, north,0);
+                assertEquals("A taxi can be created in a lane heading east",.2,E.TAXI_PROB);
+                print("\tsuccess");
+               
+                print("Test 1: conclude.... SUCCESS");
+               
+        }

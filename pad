@@ -1,0 +1,28 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    int x = 10;
+    if(x<=2)
+    {
+        cout << 1;
+        return -1;   
+    }
+    
+    int pad;
+    int pad1 = 1;
+    int pad2 = 1;
+    int pad3 = 1;
+    
+    for (int i = 3; i <= x; i++)
+    {
+        pad = pad2 + pad3;
+        pad3 = pad2; // 3rd becomes 2nd
+        pad2 = pad1; // 2nd becomes 1st
+        pad1 = pad;
+        cout << "PADOVAN(" << i << ") IS " << pad << endl;
+    }
+   return 0;
+}

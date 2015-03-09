@@ -1,0 +1,58 @@
+10
+
+dir
+665
+https://version-control.adelaide.edu.au/svn/SEGP1A-2012S1-G4/branches/rc1/res
+https://version-control.adelaide.edu.au/svn/SEGP1A-2012S1-G4
+
+
+
+2012-06-01T05:03:51.466327Z
+661
+a1211576
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+062246db-8136-4552-92df-e3ffbbc01a9a
+
+model
+dir
+
+buses
+dir
+
+pedestrians
+dir
+
+road_arrows
+dir
+
+north_tce
+dir
+
+cars
+dir
+
+pedestrian_lights
+dir
+
+taxis
+dir
+
+traffic_lights
+dir
+
+frome_rd
+dir
+
